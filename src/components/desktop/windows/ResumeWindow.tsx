@@ -7,18 +7,15 @@ export const ResumeWindow: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#0a0d14]">
       {/* Top PDF Action Toolbar */}
-      <div className="px-4 py-2 bg-[#121722] border-b border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
-        <div className="flex items-center gap-2 text-slate-300">
-          <FileText size={16} className="text-red-400" />
-          <span className="font-medium text-white">Rahul_Rathi_Resume_v4.pdf</span>
-          <span className="text-[11px] px-2 py-0.5 rounded bg-white/10 text-slate-300 font-mono">
-            156 KB • Official Upload
-          </span>
+      <div className="px-3 sm:px-4 py-2 bg-[#121722] border-b border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs shrink-0">
+        <div className="flex items-center gap-2 text-slate-300 truncate max-w-[170px] sm:max-w-none">
+          <FileText size={15} className="text-red-400 shrink-0" />
+          <span className="font-medium text-white truncate text-[11px] sm:text-xs">Rahul_Rathi_Resume_v4.pdf</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Zoom controls */}
-          <div className="hidden sm:flex items-center gap-1 bg-white/5 px-2 py-1 rounded border border-white/10 text-slate-300">
+          <div className="hidden md:flex items-center gap-1 bg-white/5 px-2 py-1 rounded border border-white/10 text-slate-300">
             <button
               onClick={() => setZoom((z) => Math.max(70, z - 10))}
               className="hover:text-white transition-colors"
@@ -40,19 +37,20 @@ export const ResumeWindow: React.FC = () => {
             href="/Rahul_Rathi_Resume_v4.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-2.5 py-1.5 rounded bg-white/10 hover:bg-white/15 text-slate-200 text-xs font-medium transition-colors flex items-center gap-1.5 border border-white/10"
+            className="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded bg-white/10 hover:bg-white/15 text-slate-200 text-xs font-medium transition-colors flex items-center gap-1 border border-white/10"
           >
-            <ExternalLink size={13} />
-            <span>Open in Tab</span>
+            <ExternalLink size={12} />
+            <span className="hidden sm:inline">Open in Tab</span>
+            <span className="sm:hidden">Open</span>
           </a>
 
           <a
             href="/Rahul_Rathi_Resume_v4.pdf"
             download="Rahul_Rathi_Resume_v4.pdf"
-            className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-colors flex items-center gap-1.5 shadow-sm"
+            className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-colors flex items-center gap-1 shadow-sm"
           >
-            <Download size={13} />
-            <span>Download PDF</span>
+            <Download size={12} />
+            <span>Download</span>
           </a>
         </div>
       </div>
@@ -60,27 +58,27 @@ export const ResumeWindow: React.FC = () => {
       {/* Embedded PDF Viewer */}
       <div className="flex-1 w-full bg-[#1b1f2b] overflow-auto flex items-center justify-center p-2 sm:p-4">
         <div
-          style={{ width: `${zoom}%`, minWidth: '320px', maxWidth: '1000px' }}
+          style={{ width: `${zoom}%`, minWidth: '280px', maxWidth: '1000px' }}
           className="h-full w-full bg-white rounded-lg shadow-xl overflow-hidden flex flex-col"
         >
           <iframe
             src="/Rahul_Rathi_Resume_v4.pdf#toolbar=0"
             title="Rahul Rathi Resume"
-            className="w-full h-full min-h-[500px] border-none"
+            className="w-full h-full min-h-[400px] border-none"
           />
         </div>
       </div>
 
       {/* Window Status Bar */}
-      <div className="h-7 px-4 bg-[#0d121c] border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-slate-400 shrink-0">
-        <div className="flex items-center gap-2">
-          <span>1 page • 156 KB • Verified PDF</span>
-          <span>•</span>
-          <span className="text-amber-400">AWS Certified Cloud Practitioner</span>
+      <div className="h-7 px-3 sm:px-4 bg-[#0d121c] border-t border-white/10 flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-slate-400 shrink-0">
+        <div className="flex items-center gap-1.5 truncate">
+          <span>156 KB • PDF</span>
+          <span className="hidden sm:inline">•</span>
+          <span className="hidden sm:inline text-amber-400">AWS Certified</span>
         </div>
-        <span className="text-emerald-400 flex items-center gap-1">
-          <CheckCircle2 size={12} />
-          Available for Full-Time Roles
+        <span className="text-emerald-400 flex items-center gap-1 whitespace-nowrap">
+          <CheckCircle2 size={11} />
+          <span>Available for Roles</span>
         </span>
       </div>
     </div>

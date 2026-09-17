@@ -9,28 +9,28 @@ export const ExperienceWindow: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[#0a0e17] text-slate-100 font-sans">
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Roles Sidebar */}
-        <div className="w-48 sm:w-56 bg-[#0f1422] border-r border-white/10 p-3 flex flex-col shrink-0">
-          <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider px-2 py-1">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {/* Left Roles Sidebar / Top Tabs on Mobile */}
+        <div className="w-full md:w-52 lg:w-56 bg-[#0f1422] border-b md:border-b-0 md:border-r border-white/10 p-2 sm:p-3 flex flex-row md:flex-col overflow-x-auto shrink-0 gap-1.5 no-scrollbar">
+          <span className="hidden md:block text-[11px] font-mono text-slate-400 uppercase tracking-wider px-2 py-1">
             Career History
           </span>
-          <div className="mt-1 space-y-1">
+          <div className="flex flex-row md:flex-col gap-1.5 w-full">
             {RESUME_DATA.experiences.map((exp) => {
               const isSelected = exp.id === selectedId;
               return (
                 <button
                   key={exp.id}
                   onClick={() => setSelectedId(exp.id)}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-medium transition-all ${
+                  className={`px-3 py-2 md:py-2.5 rounded-lg text-xs font-medium transition-all shrink-0 md:w-full text-left ${
                     isSelected
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-slate-300 hover:bg-white/5 hover:text-white'
                   }`}
                 >
                   <div className="font-bold truncate">{exp.company}</div>
-                  <div className="text-[11px] opacity-80 truncate">{exp.role}</div>
-                  <div className="text-[10px] opacity-60 font-mono mt-0.5">{exp.period}</div>
+                  <div className="text-[11px] opacity-80 truncate hidden sm:block">{exp.role}</div>
+                  <div className="text-[10px] opacity-60 font-mono mt-0.5 hidden md:block">{exp.period}</div>
                 </button>
               );
             })}
@@ -38,7 +38,7 @@ export const ExperienceWindow: React.FC = () => {
         </div>
 
         {/* Right Content Pane */}
-        <div className="flex-1 p-6 overflow-auto bg-[#0b0f19]">
+        <div className="flex-1 p-4 sm:p-6 overflow-auto bg-[#0b0f19]">
           <div className="max-w-xl space-y-6">
             {/* Header */}
             <div className="border-b border-white/10 pb-4">

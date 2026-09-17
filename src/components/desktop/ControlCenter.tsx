@@ -24,7 +24,7 @@ export const ControlCenter: React.FC = () => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -5 }}
           transition={{ type: 'spring', damping: 24, stiffness: 350 }}
-          className="pointer-events-auto absolute top-9 right-4 w-72 rounded-2xl bg-[#1a1f2c]/95 backdrop-blur-2xl border border-white/20 shadow-2xl p-3.5 space-y-3 text-slate-200 z-50"
+          className="pointer-events-auto absolute top-9 right-2 sm:right-4 w-[calc(100vw-16px)] sm:w-72 max-w-xs rounded-2xl bg-[#1a1f2c]/95 backdrop-blur-2xl border border-white/20 shadow-2xl p-3.5 space-y-3 text-slate-200 z-50"
         >
           {/* Top Toggles */}
           <div className="grid grid-cols-2 gap-2">

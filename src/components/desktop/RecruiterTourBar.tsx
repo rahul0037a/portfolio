@@ -36,7 +36,7 @@ export const RecruiterTourBar: React.FC = () => {
         className="fixed top-8 left-1/2 -translate-x-1/2 z-[60] pointer-events-auto"
       >
         {/* Sleek, Non-Overlapping Dynamic Island Pill with Progress Strip */}
-        <div className="relative overflow-hidden px-3.5 py-1.5 rounded-full bg-[#111624]/95 backdrop-blur-2xl border border-white/20 shadow-2xl flex items-center gap-3 text-slate-200">
+        <div className="relative overflow-hidden px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#111624]/95 backdrop-blur-2xl border border-white/20 shadow-2xl flex items-center gap-2 sm:gap-3 text-slate-200 max-w-[96vw]">
           {/* Real-Time Auto-Advance Progress Line at bottom */}
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10 overflow-hidden">
             <div
@@ -50,11 +50,11 @@ export const RecruiterTourBar: React.FC = () => {
           </div>
 
           {/* Step Badge */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <div className="w-5 h-5 rounded-full bg-blue-600/30 border border-blue-400/40 flex items-center justify-center text-blue-300">
               <Sparkles size={11} className="text-amber-300" />
             </div>
-            <span className="text-xs font-bold text-white whitespace-nowrap">
+            <span className="text-[11px] sm:text-xs font-bold text-white whitespace-nowrap truncate max-w-[120px] sm:max-w-none">
               {String(currentTourStep + 1).padStart(2, '0')}/{String(TOUR_STEPS.length).padStart(2, '0')}: {currentStep.title}
             </span>
           </div>

@@ -182,7 +182,7 @@ export const SpotlightSearch: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4">
+      <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 sm:pt-24 px-2 sm:px-4">
         {/* Backdrop click dismiss */}
         <motion.div
           initial={{ opacity: 0 }}

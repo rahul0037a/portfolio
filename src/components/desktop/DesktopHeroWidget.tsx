@@ -7,53 +7,53 @@ export const DesktopHeroWidget: React.FC = () => {
   const { openApp, startTour } = useOS();
 
   return (
-    <div className="w-full max-w-xl mx-auto rounded-3xl bg-[#0f1422]/85 backdrop-blur-2xl border border-white/20 p-7 sm:p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] text-center select-none space-y-5 relative group">
+    <div className="w-full max-w-xl mx-auto rounded-3xl bg-[#0f1422]/85 backdrop-blur-2xl border border-white/20 p-5 sm:p-7 md:p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] text-center select-none space-y-3.5 sm:space-y-5 relative group">
       {/* Subtle Ambient Glow Behind Card */}
       <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-blue-600/15 via-indigo-600/10 to-cyan-600/15 blur-xl opacity-60 pointer-events-none -z-10" />
 
       {/* Name & Title */}
       <div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white">
           {RESUME_DATA.personal.name}
         </h1>
-        <p className="text-sm sm:text-base font-mono text-blue-400 font-semibold mt-1.5">
+        <p className="text-xs sm:text-sm md:text-base font-mono text-blue-400 font-semibold mt-1">
           Full-Stack Software Engineer
         </p>
       </div>
 
       {/* Core Mission */}
-      <div className="space-y-1.5">
-        <p className="text-sm sm:text-base text-slate-200 font-medium leading-relaxed">
+      <div className="space-y-1 sm:space-y-1.5">
+        <p className="text-xs sm:text-sm md:text-base text-slate-200 font-medium leading-relaxed">
           I build full-stack systems from idea to production.
         </p>
-        <p className="text-xs sm:text-sm font-mono text-slate-400 tracking-wide">
+        <p className="text-[11px] sm:text-xs md:text-sm font-mono text-slate-400 tracking-wide">
           React · Next.js · Node.js · Java · AWS
         </p>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-1">
         <button
           onClick={() => openApp('projects')}
-          className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all shadow-md hover:scale-105 active:scale-95"
+          className="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 sm:gap-2 transition-all shadow-md hover:scale-105 active:scale-95"
         >
-          <FolderGit2 size={16} />
+          <FolderGit2 size={15} />
           <span>View Projects</span>
         </button>
 
         <button
           onClick={() => openApp('resume')}
-          className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-slate-100 text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all hover:text-white hover:scale-105 active:scale-95"
+          className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-slate-100 text-xs sm:text-sm font-semibold flex items-center gap-1.5 sm:gap-2 transition-all hover:text-white hover:scale-105 active:scale-95"
         >
-          <FileText size={16} className="text-rose-400" />
+          <FileText size={15} className="text-rose-400" />
           <span>Resume (PDF)</span>
         </button>
 
         <button
           onClick={startTour}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-blue-500/20 to-indigo-500/20 hover:from-amber-500/30 hover:to-blue-500/30 border border-amber-400/50 text-amber-300 text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all shadow-sm hover:scale-105 active:scale-95"
+          className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-blue-500/20 to-indigo-500/20 hover:from-amber-500/30 hover:to-blue-500/30 border border-amber-400/50 text-amber-300 text-xs sm:text-sm font-semibold flex items-center gap-1.5 sm:gap-2 transition-all shadow-sm hover:scale-105 active:scale-95"
         >
-          <Sparkles size={15} className="text-amber-300" />
+          <Sparkles size={14} className="text-amber-300" />
           <span>60s Tour</span>
         </button>
       </div>

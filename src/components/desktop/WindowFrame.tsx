@@ -24,6 +24,18 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
   const { windows, activeWindowId, focusApp, closeApp, minimizeApp, maximizeApp, isTourActive } = useOS();
   const windowState = windows[id];
 
+  const [isMobile, setIsMobile] = React.useState<boolean>(() => {
+    return typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+  });
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   if (!windowState || !windowState.isOpen || windowState.isMinimized) {
     return null;
   }
@@ -37,21 +49,23 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, y: 20 }}
       transition={{ type: 'spring', damping: 26, stiffness: 320 }}
-      drag={!isMax}
+      drag={!isMax && !isMobile}
       dragMomentum={false}
       dragElastic={0.05}
       onPointerDown={() => focusApp(id)}
       style={{
         zIndex: windowState.zIndex,
-        ...(isMax
+        ...(isMax || isMobile
           ? {
               position: 'fixed',
-              top: isTourActive ? '76px' : '36px',
-              left: '12px',
-              right: '12px',
-              bottom: '88px',
+              top: isTourActive ? '72px' : '36px',
+              left: '6px',
+              right: '6px',
+              bottom: '76px',
               width: 'auto',
               height: 'auto',
+              maxWidth: '100vw',
+              maxHeight: isTourActive ? 'calc(100vh - 152px)' : 'calc(100vh - 116px)',
             }
           : {
               position: 'absolute',
@@ -120,9 +134,21 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
           <span className="truncate">{title}</span>
         </div>
 
-        {/* Optional Header Right Actions */}
-        <div className="flex items-center gap-2 justify-end min-w-20">
+        {/* Optional Header Right Actions & Mobile Close Button */}
+        <div className="flex items-center gap-1.5 justify-end min-w-16 sm:min-w-20">
           {headerRight}
+          {isMobile && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                closeApp(id);
+              }}
+              aria-label="Close window"
+              className="p-1 rounded-md bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white"
+            >
+              <X size={14} />
+            </button>
+          )}
         </div>
       </div>
 

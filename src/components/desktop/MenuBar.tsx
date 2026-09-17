@@ -12,6 +12,7 @@ export const MenuBar: React.FC = () => {
   } = useOS();
 
   const [timeString, setTimeString] = useState<string>('');
+  const [shortTime, setShortTime] = useState<string>('');
   const [isAppleMenuOpen, setIsAppleMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -22,6 +23,13 @@ export const MenuBar: React.FC = () => {
           weekday: 'short',
           month: 'short',
           day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        })
+      );
+      setShortTime(
+        now.toLocaleTimeString('en-US', {
           hour: 'numeric',
           minute: '2-digit',
           hour12: true,
@@ -123,7 +131,7 @@ export const MenuBar: React.FC = () => {
         </div>
 
         {/* Current Active App Name */}
-        <span className="font-bold text-white tracking-wide">{getActiveAppLabel()}</span>
+        <span className="font-bold text-white tracking-wide truncate max-w-[85px] sm:max-w-none">{getActiveAppLabel()}</span>
 
         {/* Desktop Quick Nav */}
         <button
@@ -156,7 +164,7 @@ export const MenuBar: React.FC = () => {
       </div>
 
       {/* Right Menu Items */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Spotlight Search */}
         <button
           onClick={toggleSpotlight}
@@ -177,15 +185,16 @@ export const MenuBar: React.FC = () => {
         </button>
 
         {/* Status indicators */}
-        <Wifi size={13} className="opacity-90" />
+        <Wifi size={13} className="opacity-90 hidden xs:block" />
         <div className="flex items-center gap-1">
           <Battery size={14} className="text-emerald-400" />
-          <span className="text-[10px] font-mono opacity-80">100%</span>
+          <span className="hidden sm:inline text-[10px] font-mono opacity-80">100%</span>
         </div>
 
         {/* Date & Time */}
-        <span className="text-xs font-medium text-slate-200 tracking-tight">
-          {timeString}
+        <span className="text-xs font-medium text-slate-200 tracking-tight whitespace-nowrap">
+          <span className="hidden sm:inline">{timeString}</span>
+          <span className="sm:hidden">{shortTime}</span>
         </span>
       </div>
     </div>

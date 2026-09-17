@@ -93,7 +93,7 @@ export const ProjectsWindow: React.FC = () => {
       {/* Finder Body: Left Sidebar + Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Finder Sidebar: Favorites */}
-        <div className="w-44 sm:w-52 bg-[#0c101c] border-r border-white/10 p-3 flex flex-col shrink-0 text-xs">
+        <div className="hidden md:flex md:w-44 lg:w-52 bg-[#0c101c] border-r border-white/10 p-3 flex-col shrink-0 text-xs">
           <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider px-2 py-1 font-bold">
             Favorites
           </span>
@@ -147,7 +147,7 @@ export const ProjectsWindow: React.FC = () => {
         <div className="flex-1 overflow-auto bg-[#0b0f19]">
           {!selectedProjectId ? (
             /* 1. Folder Grid View of Projects */
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <h2 className="text-base font-bold text-white">Repositories & Applications</h2>

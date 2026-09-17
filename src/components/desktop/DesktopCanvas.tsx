@@ -51,11 +51,19 @@ export const DesktopCanvas: React.FC = () => {
       <RecruiterTourBar />
 
       {/* Desktop Workspace */}
-      <div className="relative w-full h-full pt-10 pb-20 px-4 sm:px-6 overflow-hidden flex flex-col justify-between">
+      <div className="relative w-full h-full pt-8 sm:pt-10 pb-20 sm:pb-24 px-3 sm:px-6 overflow-y-auto md:overflow-hidden flex flex-col justify-between touch-pan-y custom-scrollbar">
         {/* Main Desktop Space with Left Icons, Center Hero, and Right System Status */}
-        <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-12 gap-6 items-center z-0 relative pointer-events-auto">
-          {/* Left Column: Consistent Desktop Icons */}
-          <div className="md:col-span-3 flex flex-col flex-wrap items-start gap-3 max-h-[calc(100vh-160px)]">
+        <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-center z-0 relative pointer-events-auto py-2 md:py-0">
+          {/* Center Column: Hero Widget + Subtle Signature System Pulse */}
+          <div className="order-1 md:order-2 md:col-span-6 flex flex-col items-center justify-center">
+            <DesktopHeroWidget />
+            <div className="w-full">
+              <SystemPulseVisualizer />
+            </div>
+          </div>
+
+          {/* Left Column: Consistent Desktop Icons (Grid on mobile, Column on desktop) */}
+          <div className="order-2 md:order-1 md:col-span-3 grid grid-cols-4 sm:grid-cols-4 md:flex md:flex-col items-center md:items-start justify-items-center gap-1.5 sm:gap-3 max-h-none md:max-h-[calc(100vh-160px)] pb-4 md:pb-0">
             {/* About Me App */}
             <DesktopIcon
               id="about"
@@ -116,14 +124,8 @@ export const DesktopCanvas: React.FC = () => {
             />
           </div>
 
-          {/* Center Column: Hero Widget + Subtle Signature System Pulse */}
-          <div className="md:col-span-6 flex flex-col items-center justify-center">
-            <DesktopHeroWidget />
-            <SystemPulseVisualizer />
-          </div>
-
           {/* Right Column: 3-Second Recruiter Card + Compact System Status */}
-          <div className="hidden lg:flex md:col-span-3 flex-col items-end gap-3">
+          <div className="hidden lg:flex md:col-span-3 order-3 flex-col items-end gap-3">
             {/* 3-Second Recruiter Summary Card */}
             <div className="w-full max-w-xs p-3.5 rounded-2xl bg-[#0f1422]/80 backdrop-blur-xl border border-white/10 shadow-xl text-slate-200 select-none space-y-2">
               <div>

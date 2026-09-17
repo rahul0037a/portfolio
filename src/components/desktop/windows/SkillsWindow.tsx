@@ -40,7 +40,7 @@ export const SkillsWindow: React.FC = () => {
       </div>
 
       {/* Skills Matrix */}
-      <div className="flex-1 p-6 overflow-auto">
+      <div className="flex-1 p-3.5 sm:p-6 overflow-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredCategories.map((cat) => (
             <div

@@ -45,20 +45,20 @@ export const ContactWindow: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#0a0e17] text-slate-100 font-sans">
       {/* Mail Header / Fields */}
-      <div className="p-4 bg-[#0f1422] border-b border-white/10 space-y-2.5 text-xs">
+      <div className="p-3 sm:p-4 bg-[#0f1422] border-b border-white/10 space-y-2.5 text-xs">
         {/* To field */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400 w-12 font-medium">To:</span>
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-slate-200">
-              <Mail size={13} className="text-blue-400" />
-              <span className="font-mono">{RESUME_DATA.personal.email}</span>
+        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-slate-400 w-12 font-medium shrink-0">To:</span>
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-slate-200 min-w-0">
+              <Mail size={13} className="text-blue-400 shrink-0" />
+              <span className="font-mono truncate text-[11px] sm:text-xs">{RESUME_DATA.personal.email}</span>
             </div>
           </div>
 
           <button
             onClick={() => copyToClipboard(RESUME_DATA.personal.email, 'email')}
-            className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors flex items-center gap-1.5 border border-white/10"
+            className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors flex items-center gap-1.5 border border-white/10 shrink-0 text-[11px]"
           >
             {copiedEmail ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
             <span>{copiedEmail ? 'Copied!' : 'Copy Email'}</span>
@@ -66,18 +66,18 @@ export const ContactWindow: React.FC = () => {
         </div>
 
         {/* Phone field */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400 w-12 font-medium">Phone:</span>
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-slate-200">
-              <Phone size={13} className="text-emerald-400" />
-              <span className="font-mono">{RESUME_DATA.personal.phone}</span>
+        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-slate-400 w-12 font-medium shrink-0">Phone:</span>
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-slate-200 min-w-0">
+              <Phone size={13} className="text-emerald-400 shrink-0" />
+              <span className="font-mono truncate text-[11px] sm:text-xs">{RESUME_DATA.personal.phone}</span>
             </div>
           </div>
 
           <button
             onClick={() => copyToClipboard(RESUME_DATA.personal.phone, 'phone')}
-            className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors flex items-center gap-1.5 border border-white/10"
+            className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 transition-colors flex items-center gap-1.5 border border-white/10 shrink-0 text-[11px]"
           >
             {copiedPhone ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
             <span>{copiedPhone ? 'Copied!' : 'Copy Phone'}</span>

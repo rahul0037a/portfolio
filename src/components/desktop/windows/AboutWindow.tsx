@@ -28,7 +28,7 @@ export const AboutWindow: React.FC = () => {
   const { openApp, startTour } = useOS();
 
   return (
-    <div className="p-6 bg-[#0a0e17] text-slate-100 font-sans flex flex-col items-center justify-start text-center space-y-4 max-h-[85vh] overflow-y-auto custom-scrollbar">
+    <div className="p-3.5 sm:p-6 bg-[#0a0e17] text-slate-100 font-sans flex flex-col items-center justify-start text-center space-y-4 max-h-[85vh] overflow-y-auto custom-scrollbar">
       {/* Developer Monogram / Icon */}
       <div className="relative">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-[0_10px_25px_-5px_rgba(59,130,246,0.5)] border border-white/25 text-2xl font-black tracking-tight text-white">

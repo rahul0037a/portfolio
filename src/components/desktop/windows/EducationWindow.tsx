@@ -4,9 +4,9 @@ import { Award, GraduationCap, Calendar, CheckCircle2, ShieldCheck, Sparkles } f
 
 export const EducationWindow: React.FC = () => {
   return (
-    <div className="p-6 bg-[#0a0e17] text-slate-100 font-sans h-full overflow-auto space-y-6">
+    <div className="p-3.5 sm:p-6 bg-[#0a0e17] text-slate-100 font-sans h-full overflow-auto space-y-4 sm:space-y-6">
       {/* AWS Cloud Practitioner Hero Banner */}
-      <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-indigo-500/5 to-transparent border border-amber-500/30">
+      <div className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-indigo-500/5 to-transparent border border-amber-500/30">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
@@ -33,7 +33,7 @@ export const EducationWindow: React.FC = () => {
       </div>
 
       {/* University Degree */}
-      <div className="p-5 rounded-2xl bg-[#0f1422] border border-white/10 space-y-3">
+      <div className="p-3.5 sm:p-5 rounded-2xl bg-[#0f1422] border border-white/10 space-y-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">

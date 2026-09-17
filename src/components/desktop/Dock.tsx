@@ -25,6 +25,7 @@ export const Dock: React.FC = () => {
   const { windows, activeWindowId, openApp, focusApp, toggleSpotlight } = useOS();
   const [hoveredApp, setHoveredApp] = useState<string | null>(null);
   const [bouncingApp, setBouncingApp] = useState<AppId | null>(null);
+  const [tooltip, setTooltip] = useState<{ x: number; label: string; shortcut?: string } | null>(null);
 
   const dockItems: DockItem[] = [
     {
@@ -77,7 +78,28 @@ export const Dock: React.FC = () => {
     },
   ];
 
+  const handleItemHover = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string,
+    label: string,
+    shortcut?: string
+  ) => {
+    setHoveredApp(id);
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltip({
+      x: rect.left + rect.width / 2,
+      label,
+      shortcut,
+    });
+  };
+
+  const handleItemLeave = () => {
+    setHoveredApp(null);
+    setTooltip(null);
+  };
+
   const handleItemClick = (id: AppId) => {
+    setTooltip(null);
     // Trigger macOS launch bounce animation
     setBouncingApp(id);
     setTimeout(() => setBouncingApp(null), 850);
@@ -96,34 +118,41 @@ export const Dock: React.FC = () => {
 
   return (
     <div className="fixed bottom-2 sm:bottom-3 left-0 right-0 flex justify-center pointer-events-none z-50 px-2">
+      {/* Floating macOS Tooltip (Guaranteed Unclipped & Centered) */}
+      <AnimatePresence>
+        {tooltip && (
+          <motion.div
+            initial={{ opacity: 0, y: 5, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 3, scale: 0.92 }}
+            transition={{ type: 'spring', damping: 24, stiffness: 450 }}
+            style={{ left: `${tooltip.x}px` }}
+            className="fixed bottom-[56px] sm:bottom-[76px] -translate-x-1/2 z-[70] pointer-events-none px-2.5 py-1 rounded-lg bg-[#0c101c]/95 backdrop-blur-xl text-white text-[11px] sm:text-xs font-semibold border border-white/20 shadow-[0_8px_25px_rgba(0,0,0,0.85)] whitespace-nowrap flex items-center gap-1.5"
+          >
+            <span>{tooltip.label}</span>
+            {tooltip.shortcut && (
+              <span className="text-[10px] font-mono text-slate-400 bg-white/10 px-1 py-0.5 rounded">
+                {tooltip.shortcut}
+              </span>
+            )}
+            {/* Downward pointer triangle */}
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-[#0c101c] border-r border-b border-white/20" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.div
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', damping: 20, stiffness: 200 }}
-        className="pointer-events-auto px-2 sm:px-3 py-1 sm:py-2 rounded-2xl bg-[#101424]/85 sm:bg-white/10 backdrop-blur-2xl border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center gap-1 sm:gap-2 relative max-w-[90vw] sm:max-w-none overflow-x-auto touch-pan-x scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain"
+        className="pointer-events-auto px-2 sm:px-3 py-1 sm:py-2 rounded-2xl bg-[#101424]/85 sm:bg-white/10 backdrop-blur-2xl border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.8)] flex items-center gap-1 sm:gap-2 relative max-w-[92vw] sm:max-w-none overflow-x-auto sm:overflow-visible touch-pan-x scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain"
       >
         {dockItems.map((item) => {
           const isOpen = windows[item.id]?.isOpen && !windows[item.id]?.isMinimized;
-          const isHovered = hoveredApp === item.id;
           const isBouncing = bouncingApp === item.id;
 
           return (
             <div key={item.id} className="relative flex flex-col items-center shrink-0">
-              {/* Tooltip on Hover (desktop only) */}
-              <AnimatePresence>
-                {isHovered && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4, scale: 0.9 }}
-                    animate={{ opacity: 1, y: -6, scale: 1 }}
-                    exit={{ opacity: 0, y: 2, scale: 0.9 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute -top-10 px-2.5 py-1 rounded-lg bg-black/85 backdrop-blur-md text-white text-[11px] font-medium border border-white/15 shadow-xl whitespace-nowrap pointer-events-none z-50 hidden sm:block"
-                  >
-                    {item.label}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
               {/* App Icon Button: Compact on mobile, standard on desktop */}
               <motion.button
                 whileHover={{ scale: 1.2, y: -4 }}
@@ -142,8 +171,9 @@ export const Dock: React.FC = () => {
                     : { type: 'spring', damping: 14, stiffness: 350 }
                 }
                 onClick={() => handleItemClick(item.id)}
-                onMouseEnter={() => setHoveredApp(item.id)}
-                onMouseLeave={() => setHoveredApp(null)}
+                onMouseEnter={(e) => handleItemHover(e, item.id, item.label)}
+                onMouseMove={(e) => handleItemHover(e, item.id, item.label)}
+                onMouseLeave={handleItemLeave}
                 aria-label={item.label}
                 className={`w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl ${item.bgColor} flex items-center justify-center shadow-md sm:shadow-lg border border-white/25 transition-shadow hover:shadow-cyan-500/30 [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-5 sm:[&>svg]:h-5`}
               >
@@ -168,27 +198,16 @@ export const Dock: React.FC = () => {
 
         {/* ⌘K Spotlight Trigger in Dock */}
         <div className="relative flex flex-col items-center shrink-0">
-          <AnimatePresence>
-            {hoveredApp === 'spotlight' && (
-              <motion.div
-                initial={{ opacity: 0, y: 4, scale: 0.9 }}
-                animate={{ opacity: 1, y: -6, scale: 1 }}
-                exit={{ opacity: 0, y: 2, scale: 0.9 }}
-                transition={{ duration: 0.15 }}
-                className="absolute -top-10 px-2.5 py-1 rounded-lg bg-black/85 backdrop-blur-md text-white text-[11px] font-medium border border-white/15 shadow-xl whitespace-nowrap pointer-events-none z-50 hidden sm:flex items-center gap-1.5"
-              >
-                <span>Spotlight Search</span>
-                <span className="text-[10px] font-mono text-slate-400">⌘K</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           <motion.button
             whileHover={{ scale: 1.2, y: -4 }}
             whileTap={{ scale: 0.9 }}
-            onClick={toggleSpotlight}
-            onMouseEnter={() => setHoveredApp('spotlight')}
-            onMouseLeave={() => setHoveredApp(null)}
+            onClick={() => {
+              handleItemLeave();
+              toggleSpotlight();
+            }}
+            onMouseEnter={(e) => handleItemHover(e, 'spotlight', 'Spotlight Search', '⌘K')}
+            onMouseMove={(e) => handleItemHover(e, 'spotlight', 'Spotlight Search', '⌘K')}
+            onMouseLeave={handleItemLeave}
             aria-label="Spotlight Search"
             className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-gradient-to-tr from-slate-800 to-slate-600 flex items-center justify-center shadow-md sm:shadow-lg border border-white/20 hover:border-cyan-400/50 transition-colors [&>svg]:w-3.5 [&>svg]:h-3.5 sm:[&>svg]:w-5 sm:[&>svg]:h-5"
           >

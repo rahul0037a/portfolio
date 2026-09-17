@@ -120,22 +120,22 @@ export const WallpaperCanvas: React.FC = () => {
                   <text x="-65" y="-18" fill="#94a3b8" fontSize="8" fontFamily="monospace">MERN Stack Architecture</text>
                 </g>
 
-                {/* Milestone 2: FuseCake */}
+                {/* Milestone 2: VIT Chennai Graduate */}
                 <g transform="translate(740, 460)">
-                  <circle r="6.5" fill="#6366f1" fillOpacity={isExperience ? 0.95 : 0.25} />
-                  <circle r="13" fill="none" stroke="#6366f1" strokeWidth="1" strokeDasharray="3 3" opacity={isExperience ? 0.7 : 0} />
-                  <line x1="0" y1="-28" x2="0" y2="28" stroke="#6366f1" strokeWidth="1" opacity="0.45" />
-                  <text x="-75" y="-34" fill="#c7d2fe" fontSize="9.5" fontFamily="monospace" fontWeight="600">2024 · FUSECAKE DEVELOPER</text>
-                  <text x="-75" y="-18" fill="#94a3b8" fontSize="8" fontFamily="monospace">35+ React UI Components · Auth Flow</text>
-                </g>
-
-                {/* Milestone 3: VIT Chennai Graduate & Production Systems */}
-                <g transform="translate(1120, 460)">
                   <circle r="6" fill="#00f2fe" fillOpacity={isExperience ? 0.95 : 0.25} />
                   <circle r="12" fill="none" stroke="#00f2fe" strokeWidth="1" strokeDasharray="3 3" opacity={isExperience ? 0.7 : 0} />
                   <line x1="0" y1="-28" x2="0" y2="28" stroke="#00f2fe" strokeWidth="1" opacity="0.45" />
                   <text x="-65" y="-34" fill="#a5f3fc" fontSize="9.5" fontFamily="monospace" fontWeight="600">2025 · VIT B.TECH CSE</text>
                   <text x="-65" y="-18" fill="#94a3b8" fontSize="8" fontFamily="monospace">Full-Stack Systems · AWS Certified</text>
+                </g>
+
+                {/* Milestone 3: FuseCake */}
+                <g transform="translate(1120, 460)">
+                  <circle r="6.5" fill="#6366f1" fillOpacity={isExperience ? 0.95 : 0.25} />
+                  <circle r="13" fill="none" stroke="#6366f1" strokeWidth="1" strokeDasharray="3 3" opacity={isExperience ? 0.7 : 0} />
+                  <line x1="0" y1="-28" x2="0" y2="28" stroke="#6366f1" strokeWidth="1" opacity="0.45" />
+                  <text x="-75" y="-34" fill="#c7d2fe" fontSize="9.5" fontFamily="monospace" fontWeight="600">2026 · FUSECAKE DEVELOPER</text>
+                  <text x="-75" y="-18" fill="#94a3b8" fontSize="8" fontFamily="monospace">Events Discovery SaaS · Next.js 14</text>
                 </g>
               </g>
 

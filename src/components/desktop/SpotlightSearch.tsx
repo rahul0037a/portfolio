@@ -40,7 +40,7 @@ export const SpotlightSearch: React.FC = () => {
     {
       id: 'app-projects',
       title: 'Projects Explorer',
-      subtitle: 'WanderLust, FoodPlay, FuseCake, Blog Blitz',
+      subtitle: 'WanderLust, FoodPlay, Blog Blitz',
       category: 'App',
       icon: <FolderGit2 size={16} className="text-blue-400" />,
       onSelect: () => openApp('projects'),
@@ -142,12 +142,20 @@ export const SpotlightSearch: React.FC = () => {
       onSelect: () => openApp('projects'),
     },
     {
-      id: 'proj-fusecake',
-      title: 'FuseCake (Event Discovery)',
-      subtitle: 'Next.js 14, 5-stage Auth Flow, 2.4x conversion, 35+ components',
+      id: 'proj-blog-blitz',
+      title: 'Blog Blitz (Team Blogging Platform)',
+      subtitle: 'HTML5, CSS3, JavaScript, Team Git Workflow, Vercel',
       category: 'Project',
       icon: <FolderGit2 size={16} className="text-purple-400" />,
       onSelect: () => openApp('projects'),
+    },
+    {
+      id: 'exp-fusecake',
+      title: 'FuseCake (SaaS Developer)',
+      subtitle: 'Remote | Aug 2026 – Sep 2026 • React.js, Next.js, TypeScript, Tailwind',
+      category: 'App',
+      icon: <Briefcase size={16} className="text-cyan-400" />,
+      onSelect: () => openApp('experience'),
     },
   ];
 

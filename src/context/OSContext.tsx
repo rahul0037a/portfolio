@@ -4,6 +4,8 @@ import { AppId, WallpaperId, WindowState } from '../types/os';
 export interface TourStep {
   stepNumber: number;
   id: AppId;
+  stepId: string;
+  projectId?: string;
   title: string;
   tagline: string;
   note: string;
@@ -14,64 +16,64 @@ export const TOUR_STEPS: TourStep[] = [
   {
     stepNumber: 1,
     id: 'about',
-    title: 'About Rahul',
-    tagline: 'Full-Stack Software Engineer • VIT Chennai ’25',
-    note: 'Graduated in Computer Science with a 7.91 CGPA, 100+ solved DSA problems, production web platforms, and AWS cloud architecture.',
-    durationSeconds: 8,
+    stepId: '01',
+    title: '01 — Who I am',
+    tagline: 'VIT Chennai · CSE · 2025 · Balasore, Odisha',
+    note: 'AWS Certified Cloud Practitioner and full-stack software engineer passionate about architecting reliable systems.',
+    durationSeconds: 10,
   },
   {
     stepNumber: 2,
     id: 'experience',
-    title: 'Work Experience',
-    tagline: 'FuseCake SaaS Developer & Ethnus MERN Intern',
-    note: 'Architected 35+ component UI system, 5-stage auth return pipeline, and optimized database query latency by 40%.',
-    durationSeconds: 10,
+    stepId: '02',
+    title: '02 — Experience',
+    tagline: '2023 Ethnus Intern → 2025 VIT CSE → 2026 FuseCake Developer',
+    note: 'Shipped 35+ component UI system, 2.4x conversion stateful auth pipeline, and 4+ production MERN applications.',
+    durationSeconds: 8,
   },
   {
     stepNumber: 3,
     id: 'projects',
-    title: 'Best Projects & Architecture',
-    tagline: 'WanderLust, FoodPlay, FuseCake, Blog Blitz',
-    note: 'Interactive production architectures: Leaflet geocoding, Express MVC, and Python Mifflin-St Jeor metabolic algorithm.',
-    durationSeconds: 12,
+    stepId: '03',
+    projectId: 'wanderlust',
+    title: '03 — WanderLust',
+    tagline: 'Production Architecture: MVC, Passport, Joi, Leaflet, Cloudinary',
+    note: 'Clickable architecture pipeline with deep engineering decisions explaining why MongoDB, MVC, Passport, and Cloudinary were chosen.',
+    durationSeconds: 15,
   },
   {
     stepNumber: 4,
     id: 'skills',
-    title: 'Technical Skills Matrix',
-    tagline: 'React, Next.js 14, Node.js, Java, Python, MongoDB, AWS',
-    note: 'Comprehensive proficiency across frontend systems, backend microservices, and AWS cloud deployment.',
-    durationSeconds: 8,
+    stepId: '04',
+    title: '04 — Technical Stack',
+    tagline: 'Depth Matrix: Frontend, Backend, Data, Cloud & Core Engineering',
+    note: 'Concrete project evidence for every tool rather than arbitrary proficiency bars.',
+    durationSeconds: 10,
   },
   {
     stepNumber: 5,
     id: 'education',
-    title: 'AWS Certification & Academics',
-    tagline: 'AWS Certified Cloud Practitioner (Aug 2024 – Aug 2027)',
-    note: 'Industry-validated cloud engineering foundation in IAM, VPC, EC2, S3, alongside Stanford Machine Learning.',
-    durationSeconds: 9,
+    stepId: '05',
+    title: '05 — AWS / Education',
+    tagline: 'AWS Certified Cloud Practitioner (Aug 2024 – Aug 2027) & VIT CSE',
+    note: 'Cloud infrastructure foundation in IAM, VPC, EC2, and S3 alongside Stanford Machine Learning.',
+    durationSeconds: 7,
   },
   {
     stepNumber: 6,
-    id: 'resume',
-    title: 'Official Resume Preview',
-    tagline: 'Rahul_Rathi_Resume_v4.pdf (156 KB)',
-    note: 'Review and download the authentic uploaded PDF resume directly with 1-click.',
-    durationSeconds: 11,
-  },
-  {
-    stepNumber: 7,
     id: 'contact',
-    title: 'Direct Contact & Availability',
-    tagline: 'rathirahul1000@gmail.com • +91 6370223485',
-    note: 'Actively seeking Full-Time Software Engineer & Full-Stack roles. Available immediately for remote or relocation.',
-    durationSeconds: 12,
+    stepId: '06',
+    title: '06 — Resume + Contact',
+    tagline: 'Resume PDF Download & Direct Contact Lines',
+    note: 'Immediate availability for Full-Time Software Engineer & Full-Stack roles (Remote / Relocation).',
+    durationSeconds: 10,
   },
 ];
 
 interface OSContextType {
   windows: Record<AppId, WindowState>;
   activeWindowId: AppId | null;
+  selectedProjectId: string | null;
   wallpaper: WallpaperId;
   isSpotlightOpen: boolean;
   isControlCenterOpen: boolean;
@@ -84,6 +86,8 @@ interface OSContextType {
   minimizeApp: (id: AppId) => void;
   maximizeApp: (id: AppId) => void;
   focusApp: (id: AppId) => void;
+  setSelectedProjectId: (id: string | null) => void;
+  openProject: (id: string) => void;
   toggleSpotlight: () => void;
   closeSpotlight: () => void;
   toggleControlCenter: () => void;
@@ -107,7 +111,7 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
     isMaximized: false,
     zIndex: 10,
     defaultPosition: { x: 80, y: 84 },
-    defaultSize: { width: 560, height: 530 },
+    defaultSize: { width: 580, height: 550 },
   },
   resume: {
     id: 'resume',
@@ -117,7 +121,7 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
     isMaximized: false,
     zIndex: 10,
     defaultPosition: { x: 70, y: 84 },
-    defaultSize: { width: 720, height: 600 },
+    defaultSize: { width: 740, height: 600 },
   },
   projects: {
     id: 'projects',
@@ -126,8 +130,8 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
     isMinimized: false,
     isMaximized: false,
     zIndex: 10,
-    defaultPosition: { x: 120, y: 84 },
-    defaultSize: { width: 880, height: 600 },
+    defaultPosition: { x: 100, y: 84 },
+    defaultSize: { width: 920, height: 620 },
   },
   experience: {
     id: 'experience',
@@ -136,8 +140,8 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
     isMinimized: false,
     isMaximized: false,
     zIndex: 10,
-    defaultPosition: { x: 140, y: 84 },
-    defaultSize: { width: 720, height: 530 },
+    defaultPosition: { x: 130, y: 84 },
+    defaultSize: { width: 760, height: 550 },
   },
   education: {
     id: 'education',
@@ -146,18 +150,18 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
     isMinimized: false,
     isMaximized: false,
     zIndex: 10,
-    defaultPosition: { x: 160, y: 84 },
-    defaultSize: { width: 660, height: 500 },
+    defaultPosition: { x: 150, y: 84 },
+    defaultSize: { width: 680, height: 520 },
   },
   skills: {
     id: 'skills',
-    title: 'System Profiler — Tech Stack',
+    title: 'System Profiler — Tech Stack Depth',
     isOpen: false,
     isMinimized: false,
     isMaximized: false,
     zIndex: 10,
-    defaultPosition: { x: 180, y: 84 },
-    defaultSize: { width: 680, height: 510 },
+    defaultPosition: { x: 170, y: 84 },
+    defaultSize: { width: 720, height: 540 },
   },
   contact: {
     id: 'contact',
@@ -166,8 +170,8 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
     isMinimized: false,
     isMaximized: false,
     zIndex: 10,
-    defaultPosition: { x: 200, y: 84 },
-    defaultSize: { width: 590, height: 500 },
+    defaultPosition: { x: 190, y: 84 },
+    defaultSize: { width: 600, height: 520 },
   },
   settings: {
     id: 'settings',
@@ -176,7 +180,7 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
     isMinimized: false,
     isMaximized: false,
     zIndex: 10,
-    defaultPosition: { x: 220, y: 84 },
+    defaultPosition: { x: 210, y: 84 },
     defaultSize: { width: 520, height: 380 },
   },
 };
@@ -186,6 +190,7 @@ const OSContext = createContext<OSContextType | undefined>(undefined);
 export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [windows, setWindows] = useState<Record<AppId, WindowState>>(INITIAL_WINDOWS);
   const [activeWindowId, setActiveWindowId] = useState<AppId | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [highestZIndex, setHighestZIndex] = useState<number>(20);
   const [wallpaper, setWallpaper] = useState<WallpaperId>('cloud');
   const [isSpotlightOpen, setIsSpotlightOpen] = useState<boolean>(false);
@@ -213,7 +218,6 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   }, []);
 
   const openApp = (id: AppId) => {
-    // If user opens an app manually while tour is active, pause auto-play so we don't interrupt them!
     if (isTourActive) {
       setIsTourAutoPlaying(false);
     }
@@ -229,6 +233,11 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
         zIndex: nextZ,
       },
     }));
+  };
+
+  const openProject = (projectId: string) => {
+    setSelectedProjectId(projectId);
+    openApp('projects');
   };
 
   const closeApp = (id: AppId) => {
@@ -293,7 +302,7 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const toggleControlCenter = () => setIsControlCenterOpen((prev) => !prev);
   const closeControlCenter = () => setIsControlCenterOpen(false);
 
-  // Recruiter Tour Engine: Steps 01 -> 07 with auto-browse
+  // Recruiter Tour Engine: 60-Second Guided Experience (Steps 01 -> 06)
   const activateTourStep = (stepIdx: number) => {
     const step = TOUR_STEPS[stepIdx];
     if (!step) return;
@@ -303,6 +312,11 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     const nextZ = highestZIndex + 2;
     setHighestZIndex(nextZ);
     setActiveWindowId(step.id);
+
+    // If step targets a specific project (Step 3 -> WanderLust), set project ID
+    if (step.projectId) {
+      setSelectedProjectId(step.projectId);
+    }
 
     setWindows((prev) => {
       const updated = { ...prev };
@@ -315,7 +329,7 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
             isMinimized: false,
             zIndex: nextZ,
             defaultPosition: {
-              x: Math.max(16, Math.round((window.innerWidth - (updated[appId].defaultSize?.width || 700)) / 2)),
+              x: Math.max(16, Math.round((window.innerWidth - (updated[appId].defaultSize?.width || 720)) / 2)),
               y: 84,
             },
           };
@@ -371,24 +385,23 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     setIsTourAutoPlaying(true);
   };
 
-  // Automated Tour Timer: Auto-advance after optimal duration per step!
+  // Automated Tour Timer: Auto-advance after exact duration per step!
   useEffect(() => {
     if (!isTourActive || !isTourAutoPlaying) return;
 
     const currentStep = TOUR_STEPS[currentTourStep];
-    const durationMs = (currentStep?.durationSeconds || 8) * 1000;
+    const durationMs = (currentStep?.durationSeconds || 10) * 1000;
     const intervalMs = 50;
     const stepIncrement = (intervalMs / durationMs) * 100;
 
     const timer = setInterval(() => {
       setTourProgress((prev) => {
         if (prev + stepIncrement >= 100) {
-          // Auto-advance to next step
           if (currentTourStep < TOUR_STEPS.length - 1) {
             activateTourStep(currentTourStep + 1);
             return 0;
           } else {
-            // Reached final step (Contact) -> stop auto play and leave open
+            // Reached final step (Resume + Contact) -> pause autoplay and show completed state
             setIsTourAutoPlaying(false);
             return 100;
           }
@@ -405,6 +418,7 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
       value={{
         windows,
         activeWindowId,
+        selectedProjectId,
         wallpaper,
         isSpotlightOpen,
         isControlCenterOpen,
@@ -417,6 +431,8 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
         minimizeApp,
         maximizeApp,
         focusApp,
+        setSelectedProjectId,
+        openProject,
         toggleSpotlight,
         closeSpotlight,
         toggleControlCenter,

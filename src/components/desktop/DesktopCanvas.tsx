@@ -33,6 +33,7 @@ import {
   Settings,
   Sparkles,
   Command,
+  ExternalLink,
 } from 'lucide-react';
 import { RESUME_DATA } from '../../data/resumeData';
 
@@ -86,7 +87,7 @@ export const DesktopCanvas: React.FC = () => {
             <DesktopIcon
               id="projects"
               title="Projects"
-              badge="4"
+              badge="3"
               badgeColor="bg-blue-600 text-white"
               icon={<FolderGit2 size={22} className="text-blue-400" />}
             />
@@ -146,6 +147,28 @@ export const DesktopCanvas: React.FC = () => {
                 <span>Open to Full-Time Roles</span>
               </div>
 
+              <div className="flex items-center justify-between pt-1 border-t border-white/5 font-mono text-[11px]">
+                <a
+                  href={RESUME_DATA.personal.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-400 hover:text-white flex items-center gap-1 transition-colors"
+                >
+                  <span>GitHub</span>
+                  <ExternalLink size={9} />
+                </a>
+                <span className="text-slate-600">•</span>
+                <a
+                  href={RESUME_DATA.personal.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors"
+                >
+                  <span>LinkedIn</span>
+                  <ExternalLink size={9} />
+                </a>
+              </div>
+
               <div className="pt-2 border-t border-white/10 flex items-center justify-between">
                 <button
                   onClick={toggleSpotlight}
@@ -160,7 +183,7 @@ export const DesktopCanvas: React.FC = () => {
                   className="px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600/40 border border-blue-400/40 text-blue-200 text-[11px] font-medium flex items-center gap-1 transition-colors"
                 >
                   <Sparkles size={11} className="text-amber-300" />
-                  <span>Recruiter Tour</span>
+                  <span>60s Tour</span>
                 </button>
               </div>
             </div>

@@ -20,11 +20,14 @@ export const SystemStatusWidget: React.FC = () => {
       <div className="space-y-1 font-mono text-[11px]">
         <div className="flex justify-between text-slate-300">
           <span className="text-slate-400">Portfolio</span>
-          <span className="text-white">Active (Vite 8)</span>
+          <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Online
+          </span>
         </div>
         <div className="flex justify-between text-slate-300">
           <span className="text-slate-400">Projects</span>
-          <span className="text-blue-400 font-bold">4 Featured</span>
+          <span className="text-blue-400 font-bold">3 Featured</span>
         </div>
         <div className="flex justify-between text-slate-300">
           <span className="text-slate-400">Experience</span>

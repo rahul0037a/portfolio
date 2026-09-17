@@ -1,7 +1,7 @@
 import React from 'react';
 import { RESUME_DATA } from '../../../data/resumeData';
 import { useOS } from '../../../context/OSContext';
-import { Sparkles, FileText, FolderGit2, ExternalLink, Award, GraduationCap, Briefcase, Code2, CheckCircle2 } from 'lucide-react';
+import { Sparkles, FileText, FolderGit2, ExternalLink, GraduationCap, MapPin, Cpu, Award, Code2, Heart } from 'lucide-react';
 
 // Custom LeetCode Icon
 const LeetCodeIcon: React.FC<{ size?: number; className?: string }> = ({ size = 16, className = "" }) => (
@@ -28,7 +28,7 @@ export const AboutWindow: React.FC = () => {
   const { openApp, startTour } = useOS();
 
   return (
-    <div className="p-3.5 sm:p-6 bg-[#0a0e17] text-slate-100 font-sans flex flex-col items-center justify-start text-center space-y-4 max-h-[85vh] overflow-y-auto custom-scrollbar">
+    <div className="p-4 sm:p-6 bg-[#0a0e17] text-slate-100 font-sans flex flex-col items-center justify-start text-center space-y-4 max-h-[85vh] overflow-y-auto custom-scrollbar select-none">
       {/* Developer Monogram / Icon */}
       <div className="relative">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-[0_10px_25px_-5px_rgba(59,130,246,0.5)] border border-white/25 text-2xl font-black tracking-tight text-white">
@@ -46,56 +46,66 @@ export const AboutWindow: React.FC = () => {
         <p className="text-xs sm:text-sm text-blue-400 font-mono font-medium mt-0.5">
           Full-Stack Software Engineer · Cloud Builder
         </p>
-        <p className="text-[11px] text-slate-400 font-mono mt-1">
-          VIT Chennai '25 · B.Tech CSE (7.91 CGPA)
-        </p>
       </div>
 
-      {/* System Hardware & Architecture Specs Box */}
-      <div className="w-full max-w-md bg-[#111624] border border-white/10 rounded-xl p-3.5 text-xs text-left space-y-2 font-mono shadow-sm">
-        <div className="flex justify-between items-center pb-1.5 border-b border-white/5">
-          <span className="text-slate-400 flex items-center gap-1.5">
-            <GraduationCap size={13} className="text-blue-400" />
-            <span>Academics:</span>
+      {/* Real Person Layer: 4-Core Credentials Box */}
+      <div className="w-full max-w-md bg-[#111624] border border-white/10 rounded-2xl p-4 text-xs text-left font-mono shadow-sm divide-y divide-white/5 space-y-2">
+        <div className="flex items-center justify-between pt-0 pb-2">
+          <span className="text-slate-400 flex items-center gap-2">
+            <GraduationCap size={14} className="text-blue-400 shrink-0" />
+            <span>Education:</span>
           </span>
-          <span className="text-white text-right font-medium">VIT Chennai ('25) • 7.91 CGPA</span>
+          <span className="text-white font-bold">VIT Chennai · CSE · 2025</span>
         </div>
 
-        <div className="flex justify-between items-center pb-1.5 border-b border-white/5">
-          <span className="text-slate-400 flex items-center gap-1.5">
-            <Award size={13} className="text-amber-400" />
-            <span>Cloud Credential:</span>
+        <div className="flex items-center justify-between py-2">
+          <span className="text-slate-400 flex items-center gap-2">
+            <MapPin size={14} className="text-emerald-400 shrink-0" />
+            <span>Location:</span>
           </span>
-          <span className="text-amber-400 text-right font-medium">AWS Certified Cloud Practitioner</span>
+          <span className="text-white font-semibold">Balasore, Odisha</span>
         </div>
 
-        <div className="flex justify-between items-center pb-1.5 border-b border-white/5">
-          <span className="text-slate-400 flex items-center gap-1.5">
-            <Briefcase size={13} className="text-indigo-400" />
-            <span>Experience:</span>
+        <div className="flex items-center justify-between py-2">
+          <span className="text-slate-400 flex items-center gap-2">
+            <Cpu size={14} className="text-cyan-400 shrink-0" />
+            <span>Specialization:</span>
           </span>
-          <span className="text-white text-right font-medium">FuseCake SaaS • Ethnus Intern</span>
+          <span className="text-cyan-300 font-bold">Full-Stack Engineering</span>
         </div>
 
-        <div className="flex justify-between items-center pb-1.5 border-b border-white/5">
-          <span className="text-slate-400 flex items-center gap-1.5">
-            <Code2 size={13} className="text-cyan-400" />
-            <span>Core Tech:</span>
+        <div className="flex items-center justify-between pt-2">
+          <span className="text-slate-400 flex items-center gap-2">
+            <Award size={14} className="text-amber-400 shrink-0" />
+            <span>Credential:</span>
           </span>
-          <span className="text-cyan-300 text-right font-medium">React · Next.js · Node.js · Java · AWS</span>
+          <span className="text-amber-300 font-bold">AWS Certified Cloud Practitioner</span>
         </div>
+      </div>
 
-        <div className="flex justify-between items-center">
-          <span className="text-slate-400 flex items-center gap-1.5">
-            <CheckCircle2 size={13} className="text-emerald-400" />
-            <span>Status:</span>
+      {/* 3–4 Sentences About What Rahul is Interested in Building */}
+      <div className="w-full max-w-md bg-gradient-to-r from-blue-950/40 via-[#111624] to-indigo-950/40 border border-blue-500/25 rounded-2xl p-4 text-left space-y-2 shadow-sm">
+        <div className="flex items-center gap-2">
+          <Heart size={14} className="text-rose-400 shrink-0" />
+          <span className="text-[11px] font-mono text-blue-300 font-bold uppercase tracking-wider">
+            What I'm Interested in Building
           </span>
-          <span className="text-emerald-400 text-right font-medium">Open to Full-Time Roles</span>
+        </div>
+        <div className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans space-y-2">
+          <p>
+            I'm deeply interested in architecting end-to-end full-stack systems where clean design meets rock-solid engineering reliability.
+          </p>
+          <p>
+            I love turning complex requirements into fast, intuitive applications—whether that means crafting low-latency RESTful APIs, orchestrating stateful authentication pipelines, or fine-tuning database schemas.
+          </p>
+          <p>
+            I'm actively seeking Full-Time Software Engineering and Full-Stack roles where I can contribute to high-scale production platforms alongside ambitious engineering teams.
+          </p>
         </div>
       </div>
 
       {/* Algorithmic Problem Solving & DSA Highlights Box */}
-      <div className="w-full max-w-md bg-gradient-to-r from-amber-500/10 via-blue-500/10 to-indigo-500/10 border border-amber-500/30 rounded-xl p-3 text-left space-y-1.5 shadow-sm">
+      <div className="w-full max-w-md bg-[#111624] border border-amber-500/30 rounded-xl p-3 text-left space-y-1.5 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Code2 size={15} className="text-amber-400" />
@@ -107,12 +117,12 @@ export const AboutWindow: React.FC = () => {
             100+ Solved
           </span>
         </div>
-        <p className="text-xs text-slate-200 leading-relaxed font-sans">
-          Solved <strong className="text-white font-semibold">100+ DSA questions</strong> across LeetCode, HackerRank, and competitive coding platforms with strong proficiency in Arrays, Hash Maps, Dynamic Programming, and Graph algorithms.
+        <p className="text-xs text-slate-300 leading-relaxed font-sans">
+          Solved <strong className="text-white font-semibold">100+ algorithmic problems</strong> across LeetCode, HackerRank, and competitive platforms with solid fluency in Arrays, Hash Maps, Dynamic Programming, and Graph traversals.
         </p>
       </div>
 
-      {/* Professional Profiles & Social Links Grid */}
+      {/* Professional Profiles Grid */}
       <div className="w-full max-w-md space-y-1.5 text-left">
         <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider font-semibold">
           Profiles & Verified Handles
@@ -178,7 +188,7 @@ export const AboutWindow: React.FC = () => {
         </div>
       </div>
 
-      {/* Quick Launch Buttons */}
+      {/* Action Buttons */}
       <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
         <button
           onClick={startTour}

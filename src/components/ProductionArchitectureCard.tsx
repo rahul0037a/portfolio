@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, Server, ShieldCheck, Database, Cloud, Activity, Cpu, Zap, ArrowDown, Sparkles, CheckCircle2 } from 'lucide-react';
 
-type ArchitectureId = 'wanderlust' | 'foodplay' | 'fusecake';
+type ArchitectureId = 'wanderlust' | 'foodplay' | 'blog-blitz';
 
 interface ArchitectureStep {
   label: string;
@@ -121,52 +121,52 @@ const FLOWS: Record<ArchitectureId, ArchitectureFlow> = {
       }
     ]
   },
-  fusecake: {
-    id: 'fusecake',
-    name: 'FuseCake',
-    badge: 'Events Discovery SaaS',
+  'blog-blitz': {
+    id: 'blog-blitz',
+    name: 'Blog Blitz',
+    badge: 'Team Publishing Platform',
     badgeColor: 'border-cyan-500/40 text-cyan-300 bg-cyan-500/10',
-    latency: 'Edge Revalidated',
+    latency: 'Edge CDN Instant',
     steps: [
       {
-        label: '01. Discovery Interface',
-        name: 'Next.js 14 Events Interface',
-        detail: 'Multi-criteria search by keyword, city, category, price',
-        tech: 'React.js • Tailwind',
-        badge: 'Frontend',
+        label: '01. Typographic Reader & UI',
+        name: 'Semantic HTML5 & Responsive UI',
+        detail: 'High-readability layouts across 8+ publication pages',
+        tech: 'HTML5 • CSS3',
+        badge: 'Presentation',
         icon: <Globe size={13} className="text-cyan-400" />
       },
       {
-        label: '02. App Router Layer',
-        name: 'Server-Side Rendering Pipeline',
-        detail: 'Type-safe server data dispatch and curated feed delivery',
-        tech: 'Next.js 14 • TypeScript',
-        badge: 'App Router',
-        icon: <Server size={13} className="text-indigo-400" />
+        label: '02. Responsive CSS3 Architecture',
+        name: 'Mobile-First Layout Grid',
+        detail: 'Fluid typography, responsive navigation & reading styles',
+        tech: 'CSS Grid • Flexbox',
+        badge: 'Styling',
+        icon: <Zap size={13} className="text-purple-400" />
       },
       {
-        label: '03. Stateful Gatekeeper',
-        name: 'Auth-Gated Return Flow',
-        detail: 'Captures intent, gates sign-in/up, redirects to registration',
-        tech: 'Contextual Session Gate',
-        badge: 'Auth Flow',
-        icon: <ShieldCheck size={13} className="text-emerald-400" />
+        label: '03. Interactive JS State',
+        name: 'Reading Time & Dynamic Filters',
+        detail: 'Client-side category switching and reading time calculation',
+        tech: 'JavaScript (ES6+)',
+        badge: 'Client State',
+        icon: <Activity size={13} className="text-emerald-400" />
       },
       {
-        label: '04. Data Layer',
-        name: 'Events & Organizer Store',
-        detail: 'Fast structured retrieval for startup event metadata',
-        tech: 'REST Services • Schema',
+        label: '04. Article JSON Store',
+        name: 'Structured Article Feed',
+        detail: 'Schema-separated content decoupled from presentation markup',
+        tech: 'JSON • LocalStorage',
         badge: 'Data Layer',
         icon: <Database size={13} className="text-teal-400" />
       },
       {
-        label: '05. Component System',
-        name: 'Modular Component Architecture',
-        detail: 'Reusable event cards, filter drawers, registration modals',
-        tech: 'Component UI Kit',
-        badge: 'UI Kit',
-        icon: <Zap size={13} className="text-purple-400" />
+        label: '05. Vercel CI/CD Deployment',
+        name: 'Global Edge Distribution & Team Git',
+        detail: 'Continuous deployment with PR review workflows across 3 devs',
+        tech: 'Vercel • 3-Dev Git',
+        badge: 'Cloud Tier',
+        icon: <Cloud size={13} className="text-amber-400" />
       }
     ]
   }
@@ -192,7 +192,7 @@ export const ProductionArchitectureCard: React.FC = () => {
 
         {/* Small Project Selector */}
         <div className="flex items-center gap-1 bg-[#090e1f] p-0.5 rounded-lg border border-slate-800/90">
-          {(['wanderlust', 'foodplay', 'fusecake'] as ArchitectureId[]).map((id) => {
+          {(['wanderlust', 'foodplay', 'blog-blitz'] as ArchitectureId[]).map((id) => {
             const isSelected = activeId === id;
             return (
               <button
@@ -204,7 +204,7 @@ export const ProductionArchitectureCard: React.FC = () => {
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
-                {id === 'wanderlust' ? 'WanderLust' : id === 'foodplay' ? 'FoodPlay' : 'FuseCake'}
+                {id === 'wanderlust' ? 'WanderLust' : id === 'foodplay' ? 'FoodPlay' : 'Blog Blitz'}
               </button>
             );
           })}

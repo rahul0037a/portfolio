@@ -9,6 +9,7 @@ export const RecruiterTourBar: React.FC = () => {
     currentTourStep,
     nextTourStep,
     prevTourStep,
+    jumpToTourStep,
     endTour,
     isTourAutoPlaying,
     tourProgress,
@@ -54,7 +55,7 @@ export const RecruiterTourBar: React.FC = () => {
 
   return (
     <AnimatePresence>
-      <div className="fixed top-8 sm:top-9 left-0 right-0 z-[60] flex flex-col items-center px-2 sm:px-4 pointer-events-none gap-2">
+      <div className="fixed top-8 sm:top-9 left-0 right-0 z-[60] flex justify-center px-2 sm:px-4 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, y: -20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -87,6 +88,29 @@ export const RecruiterTourBar: React.FC = () => {
               <span className="text-[11px] sm:text-xs font-bold text-white truncate max-w-[120px] xs:max-w-[180px] sm:max-w-none">
                 {currentStep.title}
               </span>
+            </div>
+
+            {/* Interactive Step Indicator Dots */}
+            <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/5 border border-white/10 shrink-0">
+              {TOUR_STEPS.map((step, idx) => {
+                const isActive = idx === currentTourStep;
+                const isPassed = idx < currentTourStep;
+                return (
+                  <button
+                    key={step.stepId}
+                    onClick={() => jumpToTourStep(idx)}
+                    title={`Step ${step.stepId}: ${step.title.split('—')[1]?.trim() || step.title} (${step.durationSeconds}s)`}
+                    aria-label={`Step ${step.stepId}`}
+                    className={`transition-all rounded-full ${
+                      isActive
+                        ? 'w-4 h-2 bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_8px_rgba(0,242,254,0.8)]'
+                        : isPassed
+                        ? 'w-2 h-2 bg-emerald-400/80 hover:bg-emerald-300 hover:scale-125'
+                        : 'w-2 h-2 bg-white/20 hover:bg-white/40 hover:scale-125'
+                    }`}
+                  />
+                );
+              })}
             </div>
 
             {/* Separator & Auto-Play Status */}
@@ -183,36 +207,6 @@ export const RecruiterTourBar: React.FC = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* Quick Tour Step Pills Navigation Bar */}
-        <div className="hidden lg:flex items-center gap-1.5 pointer-events-auto bg-[#0a0e18]/85 backdrop-blur-xl px-3 py-1 rounded-full border border-white/10 shadow-lg text-[10px] font-mono">
-          {TOUR_STEPS.map((step, idx) => {
-            const isActive = idx === currentTourStep;
-            return (
-              <span
-                key={step.stepId}
-                className={`flex items-center gap-1 px-2 py-0.5 rounded-full transition-colors ${
-                  isActive
-                    ? 'bg-blue-600 text-white font-bold shadow-sm'
-                    : idx < currentTourStep
-                    ? 'text-emerald-400'
-                    : 'text-slate-400'
-                }`}
-              >
-                <span>{step.stepId}</span>
-                <span className="opacity-80">{step.title.split('—')[1]?.trim() || step.title}</span>
-                <span className="text-[9px] opacity-60">({step.durationSeconds}s)</span>
-              </span>
-            );
-          })}
-          <div className="w-[1px] h-3 bg-white/20 mx-1" />
-          <button
-            onClick={endTour}
-            className="text-amber-300 hover:text-amber-200 font-sans font-bold flex items-center gap-0.5 hover:underline"
-          >
-            View Full Portfolio →
-          </button>
-        </div>
       </div>
     </AnimatePresence>
   );

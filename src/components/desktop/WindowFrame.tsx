@@ -58,19 +58,19 @@ export const WindowFrame: React.FC<WindowFrameProps> = ({
         ...(isMax || isMobile
           ? {
               position: 'fixed',
-              top: isTourActive ? '70px' : '36px',
+              top: isTourActive ? '88px' : '36px',
               left: '6px',
               right: '6px',
               bottom: '76px',
               width: 'auto',
               height: 'auto',
               maxWidth: '100vw',
-              maxHeight: isTourActive ? 'calc(100vh - 150px)' : 'calc(100vh - 116px)',
+              maxHeight: isTourActive ? 'calc(100vh - 168px)' : 'calc(100vh - 116px)',
             }
           : {
               position: 'absolute',
               top: isTourActive
-                ? Math.max(84, windowState.defaultPosition?.y ?? 84)
+                ? Math.max(94, windowState.defaultPosition?.y ?? 94)
                 : (windowState.defaultPosition?.y ?? 84),
               left: windowState.defaultPosition?.x ?? 80,
               width: windowState.defaultSize?.width ?? 680,

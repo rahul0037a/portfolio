@@ -96,6 +96,7 @@ interface OSContextType {
   startTour: () => void;
   nextTourStep: () => void;
   prevTourStep: () => void;
+  jumpToTourStep: (stepIdx: number) => void;
   endTour: () => void;
   toggleTourAutoPlay: () => void;
   pauseTourAutoPlay: () => void;
@@ -330,7 +331,7 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
             zIndex: nextZ,
             defaultPosition: {
               x: Math.max(16, Math.round((window.innerWidth - (updated[appId].defaultSize?.width || 720)) / 2)),
-              y: 84,
+              y: 94,
             },
           };
         } else {
@@ -441,6 +442,7 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
         startTour,
         nextTourStep,
         prevTourStep,
+        jumpToTourStep: activateTourStep,
         endTour,
         toggleTourAutoPlay,
         pauseTourAutoPlay,

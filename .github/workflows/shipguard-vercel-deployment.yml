@@ -1,0 +1,81 @@
+# UNACTIVATED TEMPLATE. Copy this and both trusted scripts to portfolio/main
+# after reviewing docs/phase5-deployment.md. Creates no build or deployment.
+# It updates a native Checks-v2 run for the actual Vercel deployment ID.
+name: ShipGuard Vercel production promotion
+
+on:
+  repository_dispatch:
+    types: [vercel.deployment.ready]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shipguard-vercel-production-${{ github.event.client_payload.id }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_REPOSITORY: rahul0037a/portfolio
+  VERCEL_PROJECT_ID: ${{ vars.SHIPGUARD_VERCEL_PROJECT_ID }}
+  VERCEL_TEAM_SLUG: rahuls-projects-c1bc064c
+  VERCEL_CHECK_ID: ${{ vars.SHIPGUARD_VERCEL_CHECK_ID }}
+  SHIPGUARD_PRODUCTION_BRANCH: ${{ vars.SHIPGUARD_PRODUCTION_BRANCH }}
+  # Confirm the sender against a genuine event before activating this workflow.
+  EXPECTED_SENDER: vercel[bot]
+  SHIPGUARD_URL: ${{ vars.SHIPGUARD_URL }}
+  SHIPGUARD_DASHBOARD_URL: ${{ vars.SHIPGUARD_DASHBOARD_URL }}
+  SHIPGUARD_TARGET: production-commit
+  SHIPGUARD_REPOSITORY: ${{ github.repository }}
+  SHIPGUARD_HEAD_SHA: ${{ github.event.client_payload.git.sha }}
+  SHIPGUARD_ENVIRONMENT: production
+  SHIPGUARD_REQUEST_KEY: vercel:${{ github.event.client_payload.id }}:${{ github.run_id }}:${{ github.run_attempt }}
+  SHIPGUARD_POLL_SECONDS: '10'
+  SHIPGUARD_MAX_WAIT_SECONDS: '1800'
+  SHIPGUARD_WAIT_FOR_OVERRIDE: 'true'
+  # Defaults to NONBLOCKING TEST until the native check is explicitly activated
+  # and the variable is changed to false after both allow/deny paths are verified.
+  SHIPGUARD_VERCEL_TEST_ONLY: ${{ vars.SHIPGUARD_VERCEL_TEST_ONLY || 'true' }}
+
+jobs:
+  shipguard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Validate event before using credentials
+        run: |
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"));
+            const payload = event.client_payload;
+            const fail = () => { console.error("Vercel event scope does not match this trusted workflow."); process.exit(1); };
+            if (process.env.GITHUB_EVENT_NAME !== "repository_dispatch" || event.action !== "vercel.deployment.ready") fail();
+            if (process.env.GITHUB_REPOSITORY !== process.env.EXPECTED_REPOSITORY || event.repository?.full_name !== process.env.EXPECTED_REPOSITORY) fail();
+            if (event.sender?.login !== process.env.EXPECTED_SENDER || process.env.GITHUB_ACTOR !== process.env.EXPECTED_SENDER) fail();
+            if (!/^prj_[a-zA-Z0-9]+$/.test(process.env.VERCEL_PROJECT_ID ?? "") || payload?.project?.id !== process.env.VERCEL_PROJECT_ID) fail();
+            if (!process.env.SHIPGUARD_PRODUCTION_BRANCH || payload?.environment !== "production" || payload?.git?.ref !== process.env.SHIPGUARD_PRODUCTION_BRANCH) fail();
+            if (!/^(?:[a-fA-F0-9]{40}|[a-fA-F0-9]{64})$/.test(payload?.git?.sha ?? "") || !/^dpl_[a-zA-Z0-9]+$/.test(payload?.id ?? "")) fail();
+          '
+      - name: Fetch trusted gate client and native check publisher
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # repository_dispatch github.sha identifies trusted default-branch
+          # tooling. client_payload.git.sha identifies the deployment candidate.
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          path: .shipguard-tooling
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Evaluate exact production commit and publish native check outcome
+        env:
+          SHIPGUARD_GATE_TOKEN: ${{ secrets.SHIPGUARD_GATE_TOKEN }}
+          VERCEL_TOKEN: ${{ secrets.SHIPGUARD_VERCEL_TOKEN }}
+        run: node .shipguard-tooling/scripts/vercel-deployment-check.ts
+      # The publisher verifies actual deployment metadata with api.vercel.com,
+      # waits for other native promotion checks, waits for ShipGuard review,
+      # rechecks all identities and obtains fresh ALLOW before succeeding.
+      # Failed/canceled/missing permission is failed or left pending on outage.
+      # Force-killing this job leaves the native run pending until its timeout;
+      # no GitHub status-action post step can turn cancellation into success.

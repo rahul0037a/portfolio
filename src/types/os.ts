@@ -1,5 +1,3 @@
-import React from 'react';
-
 export type AppId =
   | 'about'
   | 'resume'
@@ -20,6 +18,8 @@ export interface WindowState {
   isMaximized: boolean;
   zIndex: number;
   defaultPosition?: { x: number; y: number };
+  position?: { x: number; y: number };
+  focusRequest?: number;
   defaultSize?: { width: number; height: number };
 }
 

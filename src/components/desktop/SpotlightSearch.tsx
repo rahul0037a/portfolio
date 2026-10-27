@@ -1,286 +1,131 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { Search, FileText, FolderGit2, Briefcase, GraduationCap, Terminal, Mail, Info, Settings, Sparkles, ArrowUpRight, Download, Code2 } from 'lucide-react';
 import { useOS } from '../../context/OSContext';
-import { AppId } from '../../types/os';
-import { Search, FileText, FolderGit2, Briefcase, GraduationCap, Terminal, Mail, Download, ArrowRight, ExternalLink } from 'lucide-react';
 import { RESUME_DATA } from '../../data/resumeData';
+import { AppId } from '../../types/os';
 
 interface SearchResult {
   id: string;
   title: string;
   subtitle: string;
   category: 'App' | 'Project' | 'Skill' | 'Action';
-  icon: React.ReactNode;
+  icon: React.ElementType;
   onSelect: () => void;
 }
 
 export const SpotlightSearch: React.FC = () => {
-  const { isSpotlightOpen, closeSpotlight, openApp, startTour } = useOS();
+  const { isSpotlightOpen, closeSpotlight, openApp, openProject, startTour } = useOS();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const resultListRef = useRef<HTMLDivElement>(null);
+  const restoreFocusRef = useRef(true);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (isSpotlightOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-      setQuery('');
-      setSelectedIndex(0);
-    }
+    if (!isSpotlightOpen) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    restoreFocusRef.current = true;
+    setQuery('');
+    setSelectedIndex(0);
+    inputRef.current?.focus();
+    return () => {
+      if (restoreFocusRef.current && previousFocus?.isConnected) previousFocus.focus();
+    };
   }, [isSpotlightOpen]);
 
-  const allItems: SearchResult[] = [
-    {
-      id: 'app-resume',
-      title: 'Resume (PDF Preview)',
-      subtitle: 'View authentic uploaded Rahul_Rathi_Resume_v4.pdf',
-      category: 'App',
-      icon: <FileText size={16} className="text-rose-400" />,
-      onSelect: () => openApp('resume'),
-    },
-    {
-      id: 'app-projects',
-      title: 'Projects Explorer',
-      subtitle: 'WanderLust, FoodPlay, Blog Blitz',
-      category: 'App',
-      icon: <FolderGit2 size={16} className="text-blue-400" />,
-      onSelect: () => openApp('projects'),
-    },
-    {
-      id: 'app-experience',
-      title: 'Work Experience',
-      subtitle: 'FuseCake SaaS Developer & Ethnus Intern',
-      category: 'App',
-      icon: <Briefcase size={16} className="text-indigo-400" />,
-      onSelect: () => openApp('experience'),
-    },
-    {
-      id: 'app-education',
-      title: 'Education & AWS Certification',
-      subtitle: "VIT Chennai '25 (7.91 CGPA) & AWS Cloud Practitioner",
-      category: 'App',
-      icon: <GraduationCap size={16} className="text-amber-400" />,
-      onSelect: () => openApp('education'),
-    },
-    {
-      id: 'app-skills',
-      title: 'Tech Stack & Skills Matrix',
-      subtitle: 'React, Next.js, Node.js, Java, Python, AWS, MongoDB',
-      category: 'App',
-      icon: <Terminal size={16} className="text-emerald-400" />,
-      onSelect: () => openApp('skills'),
-    },
-    {
-      id: 'app-contact',
-      title: 'Contact Mail',
-      subtitle: 'Email Rahul directly (rathirahul1000@gmail.com)',
-      category: 'App',
-      icon: <Mail size={16} className="text-sky-400" />,
-      onSelect: () => openApp('contact'),
-    },
-    {
-      id: 'action-recruiter',
-      title: 'Recruiter Quick Tour',
-      subtitle: '60-second guided tour of Rahul\'s engineering background',
-      category: 'Action',
-      icon: <ArrowRight size={16} className="text-amber-300" />,
-      onSelect: () => startTour(),
-    },
-    {
-      id: 'action-leetcode',
-      title: 'LeetCode Profile (100+ DSA Questions Solved)',
-      subtitle: 'https://leetcode.com/u/rathirahul1000 • Problem solving portfolio',
-      category: 'Action',
-      icon: <ExternalLink size={16} className="text-amber-400" />,
-      onSelect: () => {
-        window.open(RESUME_DATA.personal.leetcode, '_blank');
-      },
-    },
-    {
-      id: 'action-github',
-      title: 'GitHub Profile (@rahul0037a)',
-      subtitle: 'https://github.com/rahul0037a • Open source repositories and code',
-      category: 'Action',
-      icon: <ExternalLink size={16} className="text-white" />,
-      onSelect: () => {
-        window.open(RESUME_DATA.personal.github, '_blank');
-      },
-    },
-    {
-      id: 'action-linkedin',
-      title: 'LinkedIn Profile (Rahul Rathi)',
-      subtitle: 'https://linkedin.com/in/rahul-rathi-85ab42206 • Professional network',
-      category: 'Action',
-      icon: <ExternalLink size={16} className="text-blue-400" />,
-      onSelect: () => {
-        window.open(RESUME_DATA.personal.linkedin, '_blank');
-      },
-    },
-    {
-      id: 'action-download-pdf',
-      title: 'Download Official Resume PDF',
-      subtitle: 'Directly download 156 KB Rahul_Rathi_Resume_v4.pdf',
-      category: 'Action',
-      icon: <Download size={16} className="text-emerald-400" />,
-      onSelect: () => {
-        window.open('/Rahul_Rathi_Resume_v4.pdf', '_blank');
-      },
-    },
-    {
-      id: 'proj-wanderlust',
-      title: 'WanderLust (Vacation Rental)',
-      subtitle: 'Express MVC, MongoDB, Leaflet, Cloudinary, Passport.js',
-      category: 'Project',
-      icon: <FolderGit2 size={16} className="text-blue-400" />,
-      onSelect: () => openApp('projects'),
-    },
-    {
-      id: 'proj-foodplay',
-      title: 'FoodPlay (Nutrition Engine)',
-      subtitle: 'Python, Flask, Mifflin-St Jeor Algorithm, <20ms API',
-      category: 'Project',
-      icon: <FolderGit2 size={16} className="text-teal-400" />,
-      onSelect: () => openApp('projects'),
-    },
-    {
-      id: 'proj-blog-blitz',
-      title: 'Blog Blitz (Team Blogging Platform)',
-      subtitle: 'HTML5, CSS3, JavaScript, Team Git Workflow, Vercel',
-      category: 'Project',
-      icon: <FolderGit2 size={16} className="text-purple-400" />,
-      onSelect: () => openApp('projects'),
-    },
-    {
-      id: 'exp-fusecake',
-      title: 'FuseCake (SaaS Developer)',
-      subtitle: 'Remote | Aug 2026 – Sep 2026 • React.js, Next.js, TypeScript, Tailwind',
-      category: 'App',
-      icon: <Briefcase size={16} className="text-cyan-400" />,
-      onSelect: () => openApp('experience'),
-    },
+  useEffect(() => {
+    resultListRef.current?.querySelector<HTMLElement>(`[data-result-index="${selectedIndex}"]`)?.scrollIntoView({ block: 'nearest' });
+  }, [selectedIndex]);
+
+  const apps: { id: AppId; title: string; subtitle: string; icon: React.ElementType }[] = [
+    { id: 'projects', title: 'Projects Explorer', subtitle: RESUME_DATA.projects.map(project => project.title).join(', '), icon: FolderGit2 },
+    { id: 'resume', title: 'Resume (PDF Preview)', subtitle: 'Preview or download the official resume', icon: FileText },
+    { id: 'experience', title: 'Work Experience', subtitle: RESUME_DATA.experiences.map(item => item.company).join(', '), icon: Briefcase },
+    { id: 'skills', title: 'Tech Stack', subtitle: RESUME_DATA.skillCategories.map(category => category.category).join(', '), icon: Terminal },
+    { id: 'education', title: 'Education & AWS', subtitle: 'VIT Chennai, AWS certification, Stanford Machine Learning', icon: GraduationCap },
+    { id: 'contact', title: 'Contact Mail', subtitle: 'Email, phone, and professional profiles', icon: Mail },
+    { id: 'about', title: 'About Me', subtitle: 'Meet Rahul Rathi, full-stack engineer and cloud builder', icon: Info },
+    { id: 'settings', title: 'Settings', subtitle: 'Personalize the desktop wallpaper', icon: Settings },
   ];
+  const allItems: SearchResult[] = [
+    ...apps.map(app => ({ ...app, id: `app-${app.id}`, category: 'App' as const, onSelect: () => openApp(app.id) })),
+    ...RESUME_DATA.projects.map(project => ({
+      id: `project-${project.id}`, title: project.title, subtitle: `${project.subtitle} | ${project.tags.join(', ')}`,
+      category: 'Project' as const, icon: FolderGit2, onSelect: () => openProject(project.id),
+    })),
+    ...RESUME_DATA.skillCategories.flatMap(category => category.skills.map(skill => ({
+      id: `skill-${category.category}-${skill.name}`.toLowerCase().replace(/[^a-z0-9-]+/g, '-'), title: skill.name,
+      subtitle: `${category.category} | ${skill.usedInProjects.join(', ')}`,
+      category: 'Skill' as const, icon: Code2, onSelect: () => openApp('skills'),
+    }))),
+    { id: 'tour', title: 'Recruiter 60s Tour', subtitle: 'A guided look at experience, projects, and skills', category: 'Action', icon: Sparkles, onSelect: startTour },
+    { id: 'download-resume', title: 'Download Official Resume PDF', subtitle: 'Save a copy of Rahul Rathi\'s resume', category: 'Action', icon: Download, onSelect: () => {
+      const link = document.createElement('a'); link.href = '/Rahul_Rathi_Resume_v4.pdf'; link.download = 'Rahul_Rathi_Resume_v4.pdf'; link.click();
+    } },
+    ...(['github', 'linkedin', 'leetcode'] as const).map(key => ({
+      id: `external-${key}`, title: key === 'github' ? 'GitHub Profile' : key === 'linkedin' ? 'LinkedIn Profile' : 'LeetCode Profile',
+      subtitle: RESUME_DATA.personal[key], category: 'Action' as const, icon: ArrowUpRight,
+      onSelect: () => window.open(RESUME_DATA.personal[key], '_blank', 'noopener,noreferrer'),
+    })),
+  ];
+  const search = query.trim().toLowerCase();
+  const filteredItems = search ? allItems.filter(item => `${item.title} ${item.subtitle} ${item.category}`.toLowerCase().includes(search)).sort((a, b) => {
+    const rank = (item: SearchResult) => item.title.toLowerCase() === search ? 0 : item.title.toLowerCase().startsWith(search) ? 1 : 2;
+    return rank(a) - rank(b);
+  }) : allItems.slice(0, 7);
+  const safeIndex = filteredItems.length ? Math.min(selectedIndex, filteredItems.length - 1) : 0;
 
-  const filteredItems = query.trim()
-    ? allItems.filter(
-        (item) =>
-          item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.subtitle.toLowerCase().includes(query.toLowerCase()) ||
-          item.category.toLowerCase().includes(query.toLowerCase())
-      )
-    : allItems.slice(0, 7);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev + 1) % filteredItems.length);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (filteredItems[selectedIndex]) {
-        filteredItems[selectedIndex].onSelect();
-        closeSpotlight();
-      }
-    } else if (e.key === 'Escape') {
-      closeSpotlight();
+  const select = (item: SearchResult) => {
+    restoreFocusRef.current = item.category === 'Action' && item.id !== 'tour';
+    item.onSelect();
+    closeSpotlight();
+  };
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeSpotlight(); }
+    else if (event.key === 'Tab') {
+      event.preventDefault();
+      if (document.activeElement === inputRef.current) closeRef.current?.focus();
+      else inputRef.current?.focus();
+    } else if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && filteredItems.length) {
+      event.preventDefault();
+      setSelectedIndex((safeIndex + (event.key === 'ArrowDown' ? 1 : -1) + filteredItems.length) % filteredItems.length);
+    } else if (event.key === 'Enter' && document.activeElement === inputRef.current) {
+      event.preventDefault();
+      if (filteredItems[safeIndex]) select(filteredItems[safeIndex]);
     }
   };
 
-  if (!isSpotlightOpen) return null;
-
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 sm:pt-24 px-2 sm:px-4">
-        {/* Backdrop click dismiss */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={closeSpotlight}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-        />
-
-        {/* Spotlight Modal */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94, y: -10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: -10 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-          className="w-full max-w-xl bg-[#1a1f2c]/95 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-2xl overflow-hidden z-50"
-        >
-          {/* Search Input Bar */}
-          <div className="p-3.5 border-b border-white/10 flex items-center gap-3">
-            <Search size={18} className="text-slate-400 shrink-0 ml-1" />
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setSelectedIndex(0);
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder="Spotlight Search (e.g. AWS, WanderLust, Resume, Contact...)"
-              className="w-full bg-transparent text-sm text-white placeholder-slate-400 focus:outline-none"
-            />
-            <span className="text-[10px] font-mono text-slate-400 px-1.5 py-0.5 rounded bg-white/10 border border-white/10">
-              ESC
-            </span>
-          </div>
-
-          {/* Results List */}
-          <div className="max-h-80 overflow-auto p-2 space-y-1">
-            {filteredItems.length > 0 ? (
-              filteredItems.map((item, idx) => {
-                const isSelected = idx === selectedIndex;
+      {isSpotlightOpen && (
+        <motion.div key="spotlight" className="os-spotlight-layer" initial={reducedMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: .16 }} onPointerDown={event => { if (event.target === event.currentTarget) closeSpotlight(); }}>
+          <motion.div className="os-spotlight" role="dialog" aria-modal="true" aria-label="Spotlight Search" onKeyDown={handleKeyDown} initial={reducedMotion ? false : { y: -12, scale: .98 }} animate={{ y: 0, scale: 1 }} exit={reducedMotion ? undefined : { scale: .98, y: -6 }} transition={{ type: 'spring', stiffness: 400, damping: 32 }}>
+            <div className="os-spotlight-input-row">
+              <Search size={21} strokeWidth={1.7} aria-hidden="true" />
+              <input ref={inputRef} type="search" value={query} onChange={event => { setQuery(event.target.value); setSelectedIndex(0); }} placeholder="Search apps, projects, skills..." aria-label="Search apps, projects, skills" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="spotlight-results" aria-activedescendant={filteredItems[safeIndex] ? `spotlight-${filteredItems[safeIndex].id}` : undefined} autoComplete="off" spellCheck={false} />
+              <button ref={closeRef} className="os-spotlight-close" onClick={closeSpotlight} aria-label="Close search">esc</button>
+            </div>
+            <div className="os-spotlight-section" aria-live="polite">{search ? `${filteredItems.length} ${filteredItems.length === 1 ? 'result' : 'results'}` : 'Quick access'}</div>
+            <div id="spotlight-results" role="listbox" aria-label="Search results" className="os-spotlight-results" ref={resultListRef}>
+              {filteredItems.map((item, index) => {
+                const Icon = item.icon;
                 return (
-                  <div
-                    key={item.id}
-                    onClick={() => {
-                      item.onSelect();
-                      closeSpotlight();
-                    }}
-                    onMouseEnter={() => setSelectedIndex(idx)}
-                    className={`p-2.5 rounded-xl cursor-pointer transition-colors flex items-center justify-between ${
-                      isSelected ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                        {item.icon}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-xs font-bold truncate">{item.title}</div>
-                        <div className={`text-[11px] truncate ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
-                          {item.subtitle}
-                        </div>
-                      </div>
-                    </div>
-
-                    <span
-                      className={`text-[9px] font-mono px-2 py-0.5 rounded shrink-0 ml-2 ${
-                        isSelected ? 'bg-blue-700 text-white' : 'bg-white/10 text-slate-400'
-                      }`}
-                    >
-                      {item.category}
-                    </span>
+                  <div id={`spotlight-${item.id}`} key={item.id} data-result-index={index} role="option" aria-selected={safeIndex === index} onClick={() => select(item)} onPointerMove={() => setSelectedIndex(index)} className={`os-spotlight-result ${safeIndex === index ? 'is-selected' : ''}`}>
+                    <span className="os-spotlight-result-icon"><Icon size={17} strokeWidth={1.65} /></span>
+                    <div className="os-spotlight-result-copy"><div className="os-spotlight-result-title">{item.title}</div><div className="os-spotlight-result-subtitle">{item.subtitle}</div></div>
+                    <span className="os-spotlight-result-category">{item.category}</span>
                   </div>
                 );
-              })
-            ) : (
-              <div className="p-8 text-center text-xs text-slate-400">
-                No matching results found for "{query}".
-              </div>
-            )}
-          </div>
-
-          {/* Keyboard tip footer */}
-          <div className="px-4 py-2 bg-black/30 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-slate-400">
-            <span>Navigate with ↑ ↓</span>
-            <span>Press ↵ Enter to Open</span>
-          </div>
+              })}
+              {!filteredItems.length && <div className="os-search-empty"><strong>No results for “{query}”</strong>Try a project name, technology, or “resume”.</div>}
+            </div>
+            <div className="os-spotlight-footer"><span>↑ ↓ to navigate</span><span>Enter to open</span><span>Esc to close</span></div>
+          </motion.div>
         </motion.div>
-      </div>
+      )}
     </AnimatePresence>
   );
 };

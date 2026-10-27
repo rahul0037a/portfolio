@@ -1,111 +1,64 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { Download, Sparkles, Palette, Check, X, ArrowUpRight, Settings } from 'lucide-react';
 import { useOS } from '../../context/OSContext';
 import { WallpaperId } from '../../types/os';
-import { Wifi, Bluetooth, Moon, Sun, Download, Sparkles, Sliders, Palette } from 'lucide-react';
+
+const WALLPAPERS: { id: WallpaperId; name: string; background: string }[] = [
+  { id: 'cloud', name: 'Cloud Mesh', background: 'linear-gradient(140deg,#152d45,#0b1420 65%,#30526a)' },
+  { id: 'sequoia', name: 'Sequoia Twilight', background: 'linear-gradient(150deg,#3b527b,#a66c67 55%,#272c4d)' },
+  { id: 'sonoma', name: 'Sonoma Glow', background: 'linear-gradient(130deg,#635281,#242840 70%,#506f9c)' },
+  { id: 'obsidian', name: 'Studio Obsidian', background: 'linear-gradient(135deg,#434c5b,#10151f 70%,#242e3d)' },
+  { id: 'aurora', name: 'Aurora Emerald', background: 'linear-gradient(140deg,#476a60,#102d31 60%,#48738a)' },
+];
 
 export const ControlCenter: React.FC = () => {
   const { isControlCenterOpen, closeControlCenter, wallpaper, setWallpaper, startTour, openApp } = useOS();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const shouldRestoreFocus = useRef(true);
+  const reducedMotion = useReducedMotion();
 
-  if (!isControlCenterOpen) return null;
+  useEffect(() => {
+    if (!isControlCenterOpen) return;
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    shouldRestoreFocus.current = true;
+    panelRef.current?.focus();
+    return () => { if (shouldRestoreFocus.current && previous?.isConnected) previous.focus(); };
+  }, [isControlCenterOpen]);
+
+  const launch = (action: () => void) => {
+    shouldRestoreFocus.current = false;
+    action();
+    closeControlCenter();
+  };
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeControlCenter(); }
+    if (event.key !== 'Tab') return;
+    const buttons = panelRef.current?.querySelectorAll<HTMLElement>('button, a[href]');
+    if (!buttons?.length) return;
+    const first = buttons[0]; const last = buttons[buttons.length - 1];
+    if (event.shiftKey && (document.activeElement === first || document.activeElement === panelRef.current)) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && (document.activeElement === last || document.activeElement === panelRef.current)) { event.preventDefault(); first.focus(); }
+  };
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 pointer-events-none">
-        {/* Click outside backdrop */}
-        <div
-          onClick={closeControlCenter}
-          className="fixed inset-0 pointer-events-auto bg-transparent"
-        />
-
-        {/* Floating Panel */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: -5 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: -5 }}
-          transition={{ type: 'spring', damping: 24, stiffness: 350 }}
-          className="pointer-events-auto absolute top-9 right-2 sm:right-4 w-[calc(100vw-16px)] sm:w-72 max-w-xs rounded-2xl bg-[#1a1f2c]/95 backdrop-blur-2xl border border-white/20 shadow-2xl p-3.5 space-y-3 text-slate-200 z-50"
-        >
-          {/* Top Toggles */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="p-2.5 rounded-xl bg-blue-600/30 border border-blue-500/40 flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white">
-                <Wifi size={14} />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-white">Wi-Fi</div>
-                <div className="text-[10px] text-blue-200">Connected</div>
-              </div>
+      {isControlCenterOpen && (
+        <div className="os-control-layer" onPointerDown={event => { if (event.target === event.currentTarget) closeControlCenter(); }}>
+          <motion.div ref={panelRef} className="os-control-panel" role="dialog" aria-modal="true" aria-label="Control Center" tabIndex={-1} onKeyDown={handleKeyDown} initial={reducedMotion ? false : { opacity: 0, y: -5, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0 }} transition={{ type: 'spring', stiffness: 400, damping: 32 }}>
+            <div className="os-control-heading"><h2>Control Center</h2><button onClick={closeControlCenter} aria-label="Close Control Center"><X size={15} /></button></div>
+            <div className="os-control-section-heading"><span><Palette size={14} />Wallpaper</span><button onClick={() => launch(() => openApp('settings'))}>More...</button></div>
+            <div className="os-control-wallpapers" aria-label="Wallpaper selection">
+              {WALLPAPERS.map(item => <button key={item.id} type="button" className="os-control-wallpaper" style={{ background: item.background }} onClick={() => setWallpaper(item.id)} aria-label={`Set ${item.name} wallpaper`} aria-pressed={wallpaper === item.id} title={item.name}>{wallpaper === item.id && <Check size={13} strokeWidth={2.5} />}</button>)}
             </div>
-
-            <div className="p-2.5 rounded-xl bg-blue-600/30 border border-blue-500/40 flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white">
-                <Bluetooth size={14} />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-white">Bluetooth</div>
-                <div className="text-[10px] text-blue-200">On</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Recruiter Tour CTA */}
-          <button
-            onClick={() => {
-              startTour();
-              closeControlCenter();
-            }}
-            className="w-full p-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm hover:brightness-110 transition-all"
-          >
-            <Sparkles size={14} className="text-amber-300" />
-            <span>Recruiter Quick Tour</span>
-          </button>
-
-          {/* Wallpaper selector in Control Center */}
-          <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-medium text-slate-300 flex items-center gap-1.5">
-                <Palette size={13} className="text-blue-400" />
-                Wallpaper
-              </span>
-              <button
-                onClick={() => {
-                  openApp('settings');
-                  closeControlCenter();
-                }}
-                className="text-[10px] text-blue-400 hover:underline"
-              >
-                More...
-              </button>
-            </div>
-            <div className="grid grid-cols-5 gap-1">
-              {(['cloud', 'sequoia', 'sonoma', 'obsidian', 'aurora'] as WallpaperId[]).map((w) => (
-                <button
-                  key={w}
-                  onClick={() => setWallpaper(w)}
-                  className={`h-7 rounded-lg border text-[9px] font-mono capitalize transition-all ${
-                    wallpaper === w
-                      ? 'border-cyan-400 ring-1 ring-cyan-400 bg-cyan-500/20 text-white font-bold'
-                      : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'
-                  }`}
-                >
-                  {w === 'cloud' ? 'Mesh' : w.slice(0, 3)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Direct PDF Download */}
-          <a
-            href="/Rahul_Rathi_Resume_v4.pdf"
-            download="Rahul_Rathi_Resume_v4.pdf"
-            className="w-full p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-300 flex items-center justify-center gap-2 transition-colors"
-          >
-            <Download size={13} className="text-emerald-400" />
-            <span>Download Official Resume PDF</span>
-          </a>
-        </motion.div>
-      </div>
+            <p className="os-control-wallpaper-name">{WALLPAPERS.find(item => item.id === wallpaper)?.name}</p>
+            <button className="os-control-action is-primary" onClick={() => launch(startTour)}><Sparkles size={15} /><span>Recruiter Quick Tour</span><ArrowUpRight size={14} /></button>
+            <a className="os-control-action" href="/Rahul_Rathi_Resume_v4.pdf" download="Rahul_Rathi_Resume_v4.pdf"><Download size={15} /><span>Download Official Resume PDF</span></a>
+            <button className="os-control-action" onClick={() => launch(() => openApp('settings'))}><Settings size={15} /><span>System Settings...</span><ArrowUpRight size={14} /></button>
+            <p className="os-control-note">Make this workspace your own.</p>
+          </motion.div>
+        </div>
+      )}
     </AnimatePresence>
   );
 };

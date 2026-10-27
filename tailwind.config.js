@@ -28,8 +28,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['Fira Code', 'JetBrains Mono', 'monospace'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        mono: ['SFMono-Regular', 'Cascadia Code', 'Consolas', 'monospace'],
       },
       boxShadow: {
         'neon-cyan': '0 0 35px -5px rgba(0, 242, 254, 0.35)',

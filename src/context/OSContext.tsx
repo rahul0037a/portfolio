@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useReducer, useState } from 'react';
 import { AppId, WallpaperId, WindowState } from '../types/os';
 
 export interface TourStep {
@@ -17,7 +17,7 @@ export const TOUR_STEPS: TourStep[] = [
     stepNumber: 1,
     id: 'about',
     stepId: '01',
-    title: '01 — Who I am',
+    title: 'Who I am',
     tagline: 'VIT Chennai · CSE · 2025 · Balasore, Odisha',
     note: 'AWS Certified Cloud Practitioner and full-stack software engineer passionate about architecting reliable systems.',
     durationSeconds: 10,
@@ -26,7 +26,7 @@ export const TOUR_STEPS: TourStep[] = [
     stepNumber: 2,
     id: 'experience',
     stepId: '02',
-    title: '02 — Experience',
+    title: 'Experience',
     tagline: '2023 Ethnus Intern → 2025 VIT CSE → 2026 FuseCake Developer',
     note: 'Shipped 35+ component UI system, 2.4x conversion stateful auth pipeline, and 4+ production MERN applications.',
     durationSeconds: 8,
@@ -36,7 +36,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: 'projects',
     stepId: '03',
     projectId: 'wanderlust',
-    title: '03 — WanderLust',
+    title: 'WanderLust',
     tagline: 'Production Architecture: MVC, Passport, Joi, Leaflet, Cloudinary',
     note: 'Clickable architecture pipeline with deep engineering decisions explaining why MongoDB, MVC, Passport, and Cloudinary were chosen.',
     durationSeconds: 15,
@@ -45,7 +45,7 @@ export const TOUR_STEPS: TourStep[] = [
     stepNumber: 4,
     id: 'skills',
     stepId: '04',
-    title: '04 — Technical Stack',
+    title: 'Technical Stack',
     tagline: 'Depth Matrix: Frontend, Backend, Data, Cloud & Core Engineering',
     note: 'Concrete project evidence for every tool rather than arbitrary proficiency bars.',
     durationSeconds: 10,
@@ -54,8 +54,8 @@ export const TOUR_STEPS: TourStep[] = [
     stepNumber: 5,
     id: 'education',
     stepId: '05',
-    title: '05 — AWS / Education',
-    tagline: 'AWS Certified Cloud Practitioner (Aug 2024 – Aug 2027) & VIT CSE',
+    title: 'AWS / Education',
+    tagline: 'AWS Certified Cloud Practitioner (Aug 2024 - Aug 2027) & VIT CSE',
     note: 'Cloud infrastructure foundation in IAM, VPC, EC2, and S3 alongside Stanford Machine Learning.',
     durationSeconds: 7,
   },
@@ -63,7 +63,7 @@ export const TOUR_STEPS: TourStep[] = [
     stepNumber: 6,
     id: 'contact',
     stepId: '06',
-    title: '06 — Resume + Contact',
+    title: 'Resume + Contact',
     tagline: 'Resume PDF Download & Direct Contact Lines',
     note: 'Immediate availability for Full-Time Software Engineer & Full-Stack roles (Remote / Relocation).',
     durationSeconds: 10,
@@ -86,6 +86,7 @@ interface OSContextType {
   minimizeApp: (id: AppId) => void;
   maximizeApp: (id: AppId) => void;
   focusApp: (id: AppId) => void;
+  updateWindowPosition: (id: AppId, position: { x: number; y: number }) => void;
   setSelectedProjectId: (id: string | null) => void;
   openProject: (id: string) => void;
   toggleSpotlight: () => void;
@@ -116,7 +117,7 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
   },
   resume: {
     id: 'resume',
-    title: 'Rahul_Rathi_Resume_v4.pdf — Preview',
+    title: 'Rahul_Rathi_Resume_v4.pdf - Preview',
     isOpen: false,
     isMinimized: false,
     isMaximized: false,
@@ -126,7 +127,7 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
   },
   projects: {
     id: 'projects',
-    title: 'Projects — Finder',
+    title: 'Projects - Finder',
     isOpen: false,
     isMinimized: false,
     isMaximized: false,
@@ -136,7 +137,7 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
   },
   experience: {
     id: 'experience',
-    title: 'Career & Work Experience — Notes',
+    title: 'Career & Work Experience - Notes',
     isOpen: false,
     isMinimized: false,
     isMaximized: false,
@@ -156,7 +157,7 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
   },
   skills: {
     id: 'skills',
-    title: 'System Profiler — Tech Stack Depth',
+    title: 'System Profiler - Tech Stack Depth',
     isOpen: false,
     isMinimized: false,
     isMaximized: false,
@@ -166,7 +167,7 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
   },
   contact: {
     id: 'contact',
-    title: 'Mail — New Message to Rahul',
+    title: 'Mail - New Message to Rahul',
     isOpen: false,
     isMinimized: false,
     isMaximized: false,
@@ -186,269 +187,295 @@ const INITIAL_WINDOWS: Record<AppId, WindowState> = {
   },
 };
 
+interface DesktopState {
+  windows: Record<AppId, WindowState>;
+  activeWindowId: AppId | null;
+  selectedProjectId: string | null;
+  isSpotlightOpen: boolean;
+  isControlCenterOpen: boolean;
+  isTourActive: boolean;
+  currentTourStep: number;
+  isTourAutoPlaying: boolean;
+  tourProgress: number;
+  tourRevision: number;
+}
+
+type DesktopAction =
+  | { type: 'OPEN' | 'CLOSE' | 'MINIMIZE' | 'MAXIMIZE' | 'FOCUS'; id: AppId }
+  | { type: 'POSITION'; id: AppId; position: { x: number; y: number } }
+  | { type: 'PROJECT'; id: string | null; open?: boolean }
+  | { type: 'SPOTLIGHT' | 'CONTROL_CENTER'; open?: boolean }
+  | { type: 'DISMISS_OVERLAYS' }
+  | { type: 'TOUR_START' | 'TOUR_NEXT' | 'TOUR_PREV'; viewportWidth: number }
+  | { type: 'TOUR_STEP'; index: number; viewportWidth: number }
+  | { type: 'TOUR_END' }
+  | { type: 'TOUR_PLAY'; playing?: boolean }
+  | { type: 'TOUR_TICK'; progress: number; viewportWidth: number; revision: number };
+
+const INITIAL_STATE: DesktopState = {
+  windows: INITIAL_WINDOWS,
+  activeWindowId: null,
+  selectedProjectId: null,
+  isSpotlightOpen: false,
+  isControlCenterOpen: false,
+  isTourActive: false,
+  currentTourStep: 0,
+  isTourAutoPlaying: false,
+  tourProgress: 0,
+  tourRevision: 0,
+};
+
+// Desktop windows occupy layers 20-27. Shell navigation and overlays stay above them.
+function bringToFront(windows: Record<AppId, WindowState>, id: AppId) {
+  const ordered = Object.values(windows).filter((item) => item.id !== id).sort((a, b) => a.zIndex - b.zIndex);
+  const updated = { ...windows };
+  ordered.forEach((item, index) => {
+    updated[item.id] = { ...item, zIndex: 20 + index };
+  });
+  updated[id] = { ...windows[id], zIndex: 20 + ordered.length };
+  return updated;
+}
+
+function topVisibleWindow(windows: Record<AppId, WindowState>): AppId | null {
+  return Object.values(windows)
+    .filter((item) => item.isOpen && !item.isMinimized)
+    .sort((a, b) => b.zIndex - a.zIndex)[0]?.id ?? null;
+}
+
+function showTourStep(state: DesktopState, index: number, viewportWidth: number): DesktopState {
+  const step = TOUR_STEPS[index];
+  if (!step) return state;
+  const windows = bringToFront(state.windows, step.id);
+  for (const appId of Object.keys(windows) as AppId[]) {
+    const item = windows[appId];
+    windows[appId] = {
+      ...item,
+      isOpen: appId === step.id,
+      isMinimized: false,
+      // A guided step always opens in a predictable, centered position.
+      ...(appId === step.id ? {
+        isMaximized: false,
+        focusRequest: (item.focusRequest ?? 0) + 1,
+        position: {
+          x: Math.max(12, (viewportWidth - Math.min(item.defaultSize?.width ?? 720, viewportWidth - 24)) / 2),
+          y: 112,
+        },
+      } : {}),
+    };
+  }
+  return {
+    ...state,
+    windows,
+    activeWindowId: step.id,
+    selectedProjectId: step.projectId ?? state.selectedProjectId,
+    currentTourStep: index,
+    tourProgress: 0,
+    tourRevision: state.tourRevision + 1,
+    isSpotlightOpen: false,
+    isControlCenterOpen: false,
+  };
+}
+
+function desktopReducer(state: DesktopState, action: DesktopAction): DesktopState {
+  switch (action.type) {
+    case 'OPEN': {
+      const windows = bringToFront(state.windows, action.id);
+      windows[action.id] = { ...windows[action.id], isOpen: true, isMinimized: false, focusRequest: (windows[action.id].focusRequest ?? 0) + 1 };
+      return { ...state, windows, activeWindowId: action.id, isTourAutoPlaying: state.isTourActive ? false : state.isTourAutoPlaying };
+    }
+    case 'CLOSE':
+    case 'MINIMIZE': {
+      const windows = {
+        ...state.windows,
+        [action.id]: {
+          ...state.windows[action.id],
+          ...(action.type === 'CLOSE' ? { isOpen: false, isMinimized: false } : { isMinimized: true }),
+        },
+      };
+      return {
+        ...state,
+        windows,
+        activeWindowId: state.activeWindowId === action.id ? topVisibleWindow(windows) : state.activeWindowId,
+        isTourAutoPlaying: state.isTourActive ? false : state.isTourAutoPlaying,
+      };
+    }
+    case 'MAXIMIZE':
+      return {
+        ...state,
+        windows: {
+          ...bringToFront(state.windows, action.id),
+          [action.id]: {
+            ...state.windows[action.id],
+            isMaximized: !state.windows[action.id].isMaximized,
+            zIndex: 27,
+          },
+        },
+        activeWindowId: action.id,
+      };
+    case 'FOCUS':
+      if (state.activeWindowId === action.id || !state.windows[action.id].isOpen || state.windows[action.id].isMinimized) return state;
+      return { ...state, windows: bringToFront(state.windows, action.id), activeWindowId: action.id };
+    case 'POSITION':
+      return { ...state, windows: { ...state.windows, [action.id]: { ...state.windows[action.id], position: action.position } } };
+    case 'PROJECT': {
+      const updated = { ...state, selectedProjectId: action.id };
+      return action.open ? desktopReducer(updated, { type: 'OPEN', id: 'projects' }) : updated;
+    }
+    case 'SPOTLIGHT': {
+      const open = action.open ?? !state.isSpotlightOpen;
+      return { ...state, isSpotlightOpen: open, isControlCenterOpen: false, isTourAutoPlaying: open && state.isTourActive ? false : state.isTourAutoPlaying };
+    }
+    case 'CONTROL_CENTER': {
+      const open = action.open ?? !state.isControlCenterOpen;
+      return { ...state, isControlCenterOpen: open, isSpotlightOpen: false, isTourAutoPlaying: open && state.isTourActive ? false : state.isTourAutoPlaying };
+    }
+    case 'DISMISS_OVERLAYS':
+      return state.isSpotlightOpen || state.isControlCenterOpen ? { ...state, isSpotlightOpen: false, isControlCenterOpen: false } : state;
+    case 'TOUR_START':
+      return showTourStep({ ...state, isTourActive: true, isTourAutoPlaying: true }, 0, action.viewportWidth);
+    case 'TOUR_STEP':
+      return showTourStep(state, action.index, action.viewportWidth);
+    case 'TOUR_NEXT':
+      return state.currentTourStep < TOUR_STEPS.length - 1
+        ? showTourStep(state, state.currentTourStep + 1, action.viewportWidth)
+        : { ...state, isTourActive: false, isTourAutoPlaying: false, tourProgress: 0 };
+    case 'TOUR_PREV':
+      return showTourStep(state, Math.max(0, state.currentTourStep - 1), action.viewportWidth);
+    case 'TOUR_END':
+      return { ...state, isTourActive: false, isTourAutoPlaying: false, tourProgress: 0 };
+    case 'TOUR_PLAY': {
+      const playing = action.playing ?? !state.isTourAutoPlaying;
+      if (state.isTourAutoPlaying === playing || !state.isTourActive) return state;
+      return { ...state, isTourAutoPlaying: playing, tourProgress: playing && state.tourProgress >= 100 ? 0 : state.tourProgress, tourRevision: state.tourRevision + 1 };
+    }
+    case 'TOUR_TICK':
+      if (!state.isTourActive || !state.isTourAutoPlaying || action.revision !== state.tourRevision) return state;
+      if (action.progress < 100) return { ...state, tourProgress: Math.max(0, action.progress) };
+      return state.currentTourStep < TOUR_STEPS.length - 1
+        ? showTourStep(state, state.currentTourStep + 1, action.viewportWidth)
+        : { ...state, isTourAutoPlaying: false, tourProgress: 100 };
+    default:
+      return state;
+  }
+}
+
+const WALLPAPER_KEY = 'rathios-wallpaper';
+const WALLPAPERS: WallpaperId[] = ['cloud', 'sequoia', 'sonoma', 'obsidian', 'aurora'];
+
+function readWallpaper(): WallpaperId {
+  try {
+    const saved = localStorage.getItem(WALLPAPER_KEY);
+    return WALLPAPERS.includes(saved as WallpaperId) ? saved as WallpaperId : 'cloud';
+  } catch {
+    return 'cloud';
+  }
+}
+
+const viewportWidth = () => typeof window === 'undefined' ? 1280 : window.innerWidth;
 const OSContext = createContext<OSContextType | undefined>(undefined);
 
 export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [windows, setWindows] = useState<Record<AppId, WindowState>>(INITIAL_WINDOWS);
-  const [activeWindowId, setActiveWindowId] = useState<AppId | null>(null);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [highestZIndex, setHighestZIndex] = useState<number>(20);
-  const [wallpaper, setWallpaper] = useState<WallpaperId>('cloud');
-  const [isSpotlightOpen, setIsSpotlightOpen] = useState<boolean>(false);
-  const [isControlCenterOpen, setIsControlCenterOpen] = useState<boolean>(false);
+  const [state, dispatch] = useReducer(desktopReducer, INITIAL_STATE);
+  const [wallpaper, updateWallpaper] = useState<WallpaperId>(readWallpaper);
 
-  // Recruiter Tour state
-  const [isTourActive, setIsTourActive] = useState<boolean>(false);
-  const [currentTourStep, setCurrentTourStep] = useState<number>(0);
-  const [isTourAutoPlaying, setIsTourAutoPlaying] = useState<boolean>(true);
-  const [tourProgress, setTourProgress] = useState<number>(0);
+  const setWallpaper = useCallback((value: WallpaperId) => {
+    if (WALLPAPERS.includes(value)) updateWallpaper(value);
+  }, []);
 
-  // Global keyboard shortcut for Spotlight: ⌘K or Ctrl+K
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setIsSpotlightOpen((prev) => !prev);
-      } else if (e.key === 'Escape') {
-        setIsSpotlightOpen(false);
-        setIsControlCenterOpen(false);
+    try {
+      localStorage.setItem(WALLPAPER_KEY, wallpaper);
+    } catch {
+      // The desktop still works when browser storage is unavailable.
+    }
+  }, [wallpaper]);
+
+  const openApp = useCallback((id: AppId) => dispatch({ type: 'OPEN', id }), []);
+  const closeApp = useCallback((id: AppId) => dispatch({ type: 'CLOSE', id }), []);
+  const minimizeApp = useCallback((id: AppId) => dispatch({ type: 'MINIMIZE', id }), []);
+  const maximizeApp = useCallback((id: AppId) => dispatch({ type: 'MAXIMIZE', id }), []);
+  const focusApp = useCallback((id: AppId) => dispatch({ type: 'FOCUS', id }), []);
+  const updateWindowPosition = useCallback((id: AppId, position: { x: number; y: number }) => dispatch({ type: 'POSITION', id, position }), []);
+  const setSelectedProjectId = useCallback((id: string | null) => dispatch({ type: 'PROJECT', id }), []);
+  const openProject = useCallback((id: string) => dispatch({ type: 'PROJECT', id, open: true }), []);
+  const toggleSpotlight = useCallback(() => dispatch({ type: 'SPOTLIGHT' }), []);
+  const closeSpotlight = useCallback(() => dispatch({ type: 'SPOTLIGHT', open: false }), []);
+  const toggleControlCenter = useCallback(() => dispatch({ type: 'CONTROL_CENTER' }), []);
+  const closeControlCenter = useCallback(() => dispatch({ type: 'CONTROL_CENTER', open: false }), []);
+  const startTour = useCallback(() => dispatch({ type: 'TOUR_START', viewportWidth: viewportWidth() }), []);
+  const nextTourStep = useCallback(() => dispatch({ type: 'TOUR_NEXT', viewportWidth: viewportWidth() }), []);
+  const prevTourStep = useCallback(() => dispatch({ type: 'TOUR_PREV', viewportWidth: viewportWidth() }), []);
+  const jumpToTourStep = useCallback((index: number) => dispatch({ type: 'TOUR_STEP', index, viewportWidth: viewportWidth() }), []);
+  const endTour = useCallback(() => dispatch({ type: 'TOUR_END' }), []);
+  const toggleTourAutoPlay = useCallback(() => dispatch({ type: 'TOUR_PLAY' }), []);
+  const pauseTourAutoPlay = useCallback(() => dispatch({ type: 'TOUR_PLAY', playing: false }), []);
+  const resumeTourAutoPlay = useCallback(() => dispatch({ type: 'TOUR_PLAY', playing: true }), []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        dispatch({ type: 'SPOTLIGHT' });
+      } else if (event.key === 'Escape') {
+        dispatch({ type: 'DISMISS_OVERLAYS' });
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const openApp = (id: AppId) => {
-    if (isTourActive) {
-      setIsTourAutoPlaying(false);
-    }
-    const nextZ = highestZIndex + 1;
-    setHighestZIndex(nextZ);
-    setActiveWindowId(id);
-    setWindows((prev) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        isOpen: true,
-        isMinimized: false,
-        zIndex: nextZ,
-      },
-    }));
-  };
-
-  const openProject = (projectId: string) => {
-    setSelectedProjectId(projectId);
-    openApp('projects');
-  };
-
-  const closeApp = (id: AppId) => {
-    setWindows((prev) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        isOpen: false,
-      },
-    }));
-    if (activeWindowId === id) {
-      const remainingOpen = Object.values(windows).filter((w) => w.id !== id && w.isOpen && !w.isMinimized);
-      if (remainingOpen.length > 0) {
-        remainingOpen.sort((a, b) => b.zIndex - a.zIndex);
-        setActiveWindowId(remainingOpen[0].id);
-      } else {
-        setActiveWindowId(null);
-      }
-    }
-  };
-
-  const minimizeApp = (id: AppId) => {
-    setWindows((prev) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        isMinimized: true,
-      },
-    }));
-    if (activeWindowId === id) {
-      setActiveWindowId(null);
-    }
-  };
-
-  const maximizeApp = (id: AppId) => {
-    setWindows((prev) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        isMaximized: !prev[id].isMaximized,
-      },
-    }));
-  };
-
-  const focusApp = (id: AppId) => {
-    if (activeWindowId === id) return;
-    const nextZ = highestZIndex + 1;
-    setHighestZIndex(nextZ);
-    setActiveWindowId(id);
-    setWindows((prev) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        zIndex: nextZ,
-      },
-    }));
-  };
-
-  const toggleSpotlight = () => setIsSpotlightOpen((prev) => !prev);
-  const closeSpotlight = () => setIsSpotlightOpen(false);
-
-  const toggleControlCenter = () => setIsControlCenterOpen((prev) => !prev);
-  const closeControlCenter = () => setIsControlCenterOpen(false);
-
-  // Recruiter Tour Engine: 60-Second Guided Experience (Steps 01 -> 06)
-  const activateTourStep = (stepIdx: number) => {
-    const step = TOUR_STEPS[stepIdx];
-    if (!step) return;
-
-    setCurrentTourStep(stepIdx);
-    setTourProgress(0); // Reset timer bar for new step
-    const nextZ = highestZIndex + 2;
-    setHighestZIndex(nextZ);
-    setActiveWindowId(step.id);
-
-    // If step targets a specific project (Step 3 -> WanderLust), set project ID
-    if (step.projectId) {
-      setSelectedProjectId(step.projectId);
-    }
-
-    setWindows((prev) => {
-      const updated = { ...prev };
-      Object.keys(updated).forEach((key) => {
-        const appId = key as AppId;
-        if (appId === step.id) {
-          updated[appId] = {
-            ...updated[appId],
-            isOpen: true,
-            isMinimized: false,
-            zIndex: nextZ,
-            defaultPosition: {
-              x: Math.max(16, Math.round((window.innerWidth - (updated[appId].defaultSize?.width || 720)) / 2)),
-              y: 94,
-            },
-          };
-        } else {
-          updated[appId] = {
-            ...updated[appId],
-            isOpen: false,
-          };
-        }
-      });
-      return updated;
-    });
-  };
-
-  const startTour = () => {
-    setIsTourActive(true);
-    setIsTourAutoPlaying(true);
-    setTourProgress(0);
-    activateTourStep(0);
-  };
-
-  const nextTourStep = () => {
-    setTourProgress(0);
-    if (currentTourStep < TOUR_STEPS.length - 1) {
-      activateTourStep(currentTourStep + 1);
-    } else {
-      endTour();
-    }
-  };
-
-  const prevTourStep = () => {
-    setTourProgress(0);
-    if (currentTourStep > 0) {
-      activateTourStep(currentTourStep - 1);
-    }
-  };
-
-  const endTour = () => {
-    setIsTourActive(false);
-    setIsTourAutoPlaying(false);
-    setTourProgress(0);
-  };
-
-  const toggleTourAutoPlay = () => {
-    setIsTourAutoPlaying((prev) => !prev);
-  };
-
-  const pauseTourAutoPlay = () => {
-    setIsTourAutoPlaying(false);
-  };
-
-  const resumeTourAutoPlay = () => {
-    setIsTourAutoPlaying(true);
-  };
-
-  // Automated Tour Timer: Auto-advance after exact duration per step!
+  // Elapsed time is based on the monotonic clock, so delayed intervals do not slow the tour.
   useEffect(() => {
-    if (!isTourActive || !isTourAutoPlaying) return;
-
-    const currentStep = TOUR_STEPS[currentTourStep];
-    const durationMs = (currentStep?.durationSeconds || 10) * 1000;
-    const intervalMs = 50;
-    const stepIncrement = (intervalMs / durationMs) * 100;
-
-    const timer = setInterval(() => {
-      setTourProgress((prev) => {
-        if (prev + stepIncrement >= 100) {
-          if (currentTourStep < TOUR_STEPS.length - 1) {
-            activateTourStep(currentTourStep + 1);
-            return 0;
-          } else {
-            // Reached final step (Resume + Contact) -> pause autoplay and show completed state
-            setIsTourAutoPlaying(false);
-            return 100;
-          }
-        }
-        return prev + stepIncrement;
+    if (!state.isTourActive || !state.isTourAutoPlaying) return;
+    const startingProgress = state.tourProgress;
+    const startedAt = performance.now();
+    const duration = TOUR_STEPS[state.currentTourStep].durationSeconds * 1000;
+    const timer = window.setInterval(() => {
+      dispatch({
+        type: 'TOUR_TICK',
+        progress: startingProgress + ((performance.now() - startedAt) / duration) * 100,
+        viewportWidth: viewportWidth(),
+        revision: state.tourRevision,
       });
-    }, intervalMs);
+    }, 50);
+    return () => window.clearInterval(timer);
+    // Progress deliberately does not restart the clock on every tick.
+  }, [state.isTourActive, state.isTourAutoPlaying, state.currentTourStep, state.tourRevision]);
 
-    return () => clearInterval(timer);
-  }, [isTourActive, isTourAutoPlaying, currentTourStep]);
+  useEffect(() => {
+    const pauseWhenHidden = () => {
+      if (document.hidden) pauseTourAutoPlay();
+    };
+    document.addEventListener('visibilitychange', pauseWhenHidden);
+    return () => document.removeEventListener('visibilitychange', pauseWhenHidden);
+  }, [pauseTourAutoPlay]);
 
   return (
-    <OSContext.Provider
-      value={{
-        windows,
-        activeWindowId,
-        selectedProjectId,
-        wallpaper,
-        isSpotlightOpen,
-        isControlCenterOpen,
-        isTourActive,
-        currentTourStep,
-        isTourAutoPlaying,
-        tourProgress,
-        openApp,
-        closeApp,
-        minimizeApp,
-        maximizeApp,
-        focusApp,
-        setSelectedProjectId,
-        openProject,
-        toggleSpotlight,
-        closeSpotlight,
-        toggleControlCenter,
-        closeControlCenter,
-        setWallpaper,
-        startTour,
-        nextTourStep,
-        prevTourStep,
-        jumpToTourStep: activateTourStep,
-        endTour,
-        toggleTourAutoPlay,
-        pauseTourAutoPlay,
-        resumeTourAutoPlay,
-      }}
-    >
+    <OSContext.Provider value={{
+      ...state,
+      wallpaper,
+      openApp,
+      closeApp,
+      minimizeApp,
+      maximizeApp,
+      focusApp,
+      updateWindowPosition,
+      setSelectedProjectId,
+      openProject,
+      toggleSpotlight,
+      closeSpotlight,
+      toggleControlCenter,
+      closeControlCenter,
+      setWallpaper,
+      startTour,
+      nextTourStep,
+      prevTourStep,
+      jumpToTourStep,
+      endTour,
+      toggleTourAutoPlay,
+      pauseTourAutoPlay,
+      resumeTourAutoPlay,
+    }}>
       {children}
     </OSContext.Provider>
   );
@@ -456,8 +483,6 @@ export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }
 
 export const useOS = () => {
   const context = useContext(OSContext);
-  if (!context) {
-    throw new Error('useOS must be used within an OSProvider');
-  }
+  if (!context) throw new Error('useOS must be used within an OSProvider');
   return context;
 };

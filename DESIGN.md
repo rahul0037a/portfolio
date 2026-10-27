@@ -16,6 +16,8 @@ The workspace has a clear welcome area, real project previews with direct naviga
 
 ## Implementation
 
-`src/index.css` owns shared materials and desktop layout. `shell.css` owns system controls. `windows/windows.css` owns app content. All three share `--os-*` surface, text, border, and accent tokens. Wallpapers are decorative CSS layers. No external font request is needed. App contents load on demand.
+`src/index.css` owns shared materials and desktop layout. `shell.css` owns system controls. `windows/windows.css` owns app content. All three share `--os-*` surface, text, border, and accent tokens. `wallpaper.css` owns terrain drift, ambient light, and the Cloud Mesh topology with travelling packets. Animation pauses in hidden tabs and becomes static with reduced motion. No external font request is needed. App contents load on demand.
+
+The workspace scroll host spans the full viewport, with a separate centered content wrapper. Its scrollbar is hidden while wheel, touch, and keyboard scrolling remain available. App window scrollbars are separate and remain visible.
 
 The Resume app displays pages rendered from the original PDF, with zoom and direct PDF links. After replacing the PDF, run `python scripts/render_resume_preview.py` with pypdfium2 and Pillow installed to refresh its page images and generated manifest.

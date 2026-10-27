@@ -45,30 +45,32 @@ export const DesktopCanvas: React.FC = () => {
       <RecruiterTourBar />
 
       <main id="workspace" className="desktop-workspace" tabIndex={-1}>
-        <div className="workspace-heading">
-          <div className="workspace-breadcrumb"><Monitor size={15} /><span>Rahul’s workspace</span><span className="workspace-breadcrumb-divider">/</span><span>Portfolio</span></div>
-          <button className="workspace-availability" onClick={() => openApp('contact')}><span /> Open to Full-Time Roles <ArrowUpRight size={13} /></button>
-        </div>
-
-        <div className="desktop-layout">
-          <nav className="desktop-apps" aria-label="Desktop apps">
-            {APPS.map(app => <DesktopIcon key={app.id} id={app.id} title={app.label} badge={'badge' in app ? app.badge : undefined} icon={<app.icon size={24} />} />)}
-          </nav>
-          <div className="desktop-main-column">
-            <DesktopHeroWidget />
-            <section className="stack-widget" aria-labelledby="stack-widget-title">
-              <div><Terminal size={15} /><h2 id="stack-widget-title">Tools I build with</h2></div>
-              <p><span>React</span><span>Next.js</span><span>TypeScript</span><span>Node.js</span><span>Java</span><span>AWS</span></p>
-              <button onClick={() => openApp('skills')} aria-label="Explore Tech Stack"><ArrowUpRight size={17} /></button>
-            </section>
+        <div className="workspace-content">
+          <div className="workspace-heading">
+            <div className="workspace-breadcrumb"><Monitor size={15} /><span>Rahul’s workspace</span><span className="workspace-breadcrumb-divider">/</span><span>Portfolio</span></div>
+            <button className="workspace-availability" onClick={() => openApp('contact')}><span /> Open to Full-Time Roles <ArrowUpRight size={13} /></button>
           </div>
-          <aside className="desktop-side-column" aria-label="Portfolio highlights">
-            <FeaturedProjectsWidget />
-            <SystemStatusWidget />
-          </aside>
-        </div>
 
-        <div className="workspace-footer"><span>Built with curiosity. Designed to explore.</span><button onClick={toggleSpotlight}><Command size={12} /><span>Search anything</span><kbd>Ctrl / ⌘ K</kbd></button></div>
+          <div className="desktop-layout">
+            <nav className="desktop-apps" aria-label="Desktop apps">
+              {APPS.map(app => <DesktopIcon key={app.id} id={app.id} title={app.label} badge={'badge' in app ? app.badge : undefined} icon={<app.icon size={24} />} />)}
+            </nav>
+            <div className="desktop-main-column">
+              <DesktopHeroWidget />
+              <section className="stack-widget" aria-labelledby="stack-widget-title">
+                <div><Terminal size={15} /><h2 id="stack-widget-title">Tools I build with</h2></div>
+                <p><span>React</span><span>Next.js</span><span>TypeScript</span><span>Node.js</span><span>Java</span><span>AWS</span></p>
+                <button onClick={() => openApp('skills')} aria-label="Explore Tech Stack"><ArrowUpRight size={17} /></button>
+              </section>
+            </div>
+            <aside className="desktop-side-column" aria-label="Portfolio highlights">
+              <FeaturedProjectsWidget />
+              <SystemStatusWidget />
+            </aside>
+          </div>
+
+          <div className="workspace-footer"><span>Built with curiosity. Designed to explore.</span><button onClick={toggleSpotlight}><Command size={12} /><span>Search anything</span><kbd>Ctrl / ⌘ K</kbd></button></div>
+        </div>
       </main>
 
       <div className="desktop-windows">

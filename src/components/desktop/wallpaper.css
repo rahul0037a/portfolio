@@ -1,0 +1,143 @@
+/* Decorative atmosphere stays behind the desktop and never captures input. */
+.desktop-wallpaper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--wallpaper-bg, #111b2b);
+  --wallpaper-back: #3a526d;
+  --wallpaper-middle: #233b56;
+  --wallpaper-front: #111f33;
+  --topology-accent: #a8d5f5;
+}
+
+.wallpaper-horizon {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 77% 0%, #87a9ce1f, transparent 55%), linear-gradient(175deg, #10172200 25%, #080e1b85);
+}
+
+.wallpaper-atmosphere {
+  position: absolute;
+  inset: -12%;
+  background: radial-gradient(ellipse at 25% 20%, #a1cef51c, transparent 40%), radial-gradient(ellipse at 80% 75%, #729fcc18, transparent 45%);
+  animation: wallpaper-light-drift 28s ease-in-out infinite alternate;
+}
+
+.wallpaper-ridge {
+  position: absolute;
+  width: 150%;
+  height: 105%;
+  border-radius: 49% 48% 0 0;
+  box-shadow: inset 0 1px #c5dcf01c;
+  transform: rotate(var(--ridge-angle));
+  animation: wallpaper-ridge-drift 30s ease-in-out infinite alternate;
+}
+
+.ridge-back {
+  --ridge-angle: -18deg;
+  left: -18%;
+  top: 45%;
+  background: linear-gradient(130deg, var(--wallpaper-back), var(--wallpaper-middle) 65%);
+  animation-duration: 32s;
+  animation-delay: -9s;
+}
+
+.ridge-middle {
+  --ridge-angle: 14deg;
+  left: -38%;
+  top: 63%;
+  background: linear-gradient(145deg, var(--wallpaper-middle), var(--wallpaper-front) 65%);
+  animation-duration: 26s;
+  animation-delay: -15s;
+}
+
+.ridge-front {
+  --ridge-angle: -25deg;
+  left: 25%;
+  top: 72%;
+  background: linear-gradient(150deg, var(--wallpaper-front), #0b1422 70%);
+  animation-duration: 36s;
+  animation-delay: -22s;
+}
+
+.wallpaper-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #0a12202e, transparent 45%, #0a122016), radial-gradient(ellipse at 50% 40%, transparent 30%, #050b173d);
+}
+
+.wallpaper-cursor-light { position: absolute; inset: 0; }
+
+.wallpaper-topology {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: .64;
+  transition: opacity .6s;
+}
+
+.topology-link { fill: none; stroke: var(--topology-accent); stroke-width: .7; stroke-opacity: .15; }
+.topology-packet {
+  fill: none;
+  stroke: var(--topology-accent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 3 97;
+  opacity: .72;
+  animation: wallpaper-packet-travel 15s linear infinite;
+}
+.topology-node { fill: var(--topology-accent); opacity: .55; }
+.topology-pulse {
+  fill: none;
+  stroke: var(--topology-accent);
+  stroke-width: .8;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wallpaper-node-pulse 5s ease-out infinite;
+}
+
+.desktop-wallpaper[data-active-app="projects"] .wallpaper-topology { opacity: .88; }
+.desktop-wallpaper[data-active-app="education"] { --topology-accent: #d7c295; }
+.desktop-wallpaper[data-active-app="skills"] { --topology-accent: #a6d7ca; }
+
+.wallpaper-sequoia { --wallpaper-bg: #271f2c; --wallpaper-back: #735d68; --wallpaper-middle: #4d3f56; --wallpaper-front: #28243b; }
+.wallpaper-sonoma { --wallpaper-bg: #1d2137; --wallpaper-back: #5d5b7b; --wallpaper-middle: #3f4265; --wallpaper-front: #222c49; }
+.wallpaper-obsidian { --wallpaper-bg: #191e26; --wallpaper-back: #414a55; --wallpaper-middle: #303943; --wallpaper-front: #1e2732; }
+.wallpaper-aurora { --wallpaper-bg: #142728; --wallpaper-back: #4b706c; --wallpaper-middle: #2c514e; --wallpaper-front: #193637; }
+.wallpaper-sequoia .wallpaper-atmosphere { background: radial-gradient(ellipse at 20% 30%, #dbb4c51a, transparent 44%), radial-gradient(ellipse at 80% 75%, #8774a220, transparent 48%); }
+.wallpaper-aurora .wallpaper-atmosphere { background: radial-gradient(ellipse at 25% 20%, #a1f5cf20, transparent 42%), radial-gradient(ellipse at 80% 75%, #72c4cc20, transparent 45%); }
+
+@keyframes wallpaper-ridge-drift {
+  from { transform: translate3d(-1.7%, .9%, 0) rotate(var(--ridge-angle)) scale(1.02); }
+  to { transform: translate3d(1.7%, -1.2%, 0) rotate(calc(var(--ridge-angle) + 2deg)) scale(1.045); }
+}
+@keyframes wallpaper-light-drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1); opacity: .55; }
+  to { transform: translate3d(4%, 3%, 0) scale(1.1); opacity: 1; }
+}
+@keyframes wallpaper-packet-travel { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@keyframes wallpaper-node-pulse {
+  0% { transform: scale(.65); opacity: .6; }
+  75%, 100% { transform: scale(2.1); opacity: 0; }
+}
+
+/* Hidden tabs consume no animation frames. Only discrete visibility changes use React state. */
+.desktop-wallpaper.is-paused *, .desktop-wallpaper.is-paused *::before, .desktop-wallpaper.is-paused *::after { animation-play-state: paused !important; }
+
+@media (max-width: 700px) {
+  .wallpaper-topology { opacity: .47; }
+  .topology-secondary, .topology-pulse { display: none; }
+  .ridge-front { animation: none; }
+  .wallpaper-atmosphere { animation-duration: 38s; }
+}
+
+.desktop-wallpaper.is-reduced-motion * { animation: none !important; transition: none !important; }
+.desktop-wallpaper.is-reduced-motion .topology-packet, .desktop-wallpaper.is-reduced-motion .topology-pulse { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .desktop-wallpaper * { animation: none !important; transition: none !important; }
+  .topology-packet, .topology-pulse { display: none; }
+}
